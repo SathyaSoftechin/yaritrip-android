@@ -1,0 +1,339 @@
+// import React, { useState } from 'react';
+// import {
+//   View,
+//   Image,
+//   Text,
+//   TextInput,
+//   TouchableOpacity,
+//   ScrollView,
+// } from 'react-native';
+// import { SafeAreaView } from 'react-native-safe-area-context';
+
+// import styles from '../styles/SignupStyles';
+
+// const SignupScreen = ({navigation}) => {
+//   const [isSignup, setIsSignup] = useState(true);
+//   const [agree, setAgree] = useState(false);
+
+//   return (
+//     <SafeAreaView style={styles.container}>
+//       <ScrollView
+//         contentContainerStyle={styles.scrollContainer}
+//         showsVerticalScrollIndicator={false}
+//       >
+//         {/* Top Blue Section */}
+//         <Image
+//                     source={require('../assets/logo1.jpeg')}
+//                     style={styles.logo}
+//                     resizeMode="contain"
+//                   />
+//         <View style={styles.topSection}>
+//           <Text style={styles.title}>
+//             Signup now to access{'\n'}your personal account
+//           </Text>
+//         </View>
+
+//         {/* White Rounded Card */}
+//         <View style={styles.card}>
+          
+//           {/* Toggle */}
+//           <View style={styles.toggleContainer}>
+//             <TouchableOpacity
+//               style={[
+//                 styles.toggleButton,
+//                 isSignup && styles.activeToggle,
+//               ]}
+//               onPress={() => setIsSignup(true)}
+//             >
+//               <Text
+//                 style={[
+//                   styles.toggleText,
+//                   isSignup && styles.activeText,
+//                 ]}
+//               >
+//                 Sign Up
+//               </Text>
+//             </TouchableOpacity>
+
+//             <TouchableOpacity
+//   style={[
+//     styles.toggleButton,
+//     !isSignup && styles.activeToggle,
+//   ]}
+//   onPress={() => navigation.navigate('Login')}
+// >
+//   <Text
+//     style={[
+//       styles.toggleText,
+//       !isSignup && styles.activeText,
+//     ]}
+//   >
+//     Log In
+//   </Text>
+// </TouchableOpacity>
+//           </View>
+
+//           {/* Form */}
+//           <Text style={styles.label}>Name</Text>
+//           <TextInput style={styles.input} />
+
+//           <Text style={styles.label}>E-mail ID</Text>
+//           <TextInput style={styles.input} />
+
+//           <Text style={styles.label}>Mobile number</Text>
+//           <TextInput style={styles.input} keyboardType="phone-pad" />
+
+//           <Text style={styles.label}>Password</Text>
+//           <TextInput style={styles.input} secureTextEntry />
+
+//           <Text style={styles.label}>Confirm Password</Text>
+//           <TextInput style={styles.input} secureTextEntry />
+
+//           {/* Terms */}
+//           <View style={styles.termsRow}>
+//             <TouchableOpacity
+//               style={styles.checkbox}
+//               onPress={() => setAgree(!agree)}
+//             >
+//               {agree && <View style={styles.checked} />}
+//             </TouchableOpacity>
+
+//             <Text style={styles.termsText}>
+//               Agree Terms And Conditions.
+//             </Text>
+//           </View>
+
+//           {/* Button */}
+//           <TouchableOpacity style={styles.button}>
+//             <Text style={styles.buttonText}>Sign Up</Text>
+//           </TouchableOpacity>
+
+//         </View>
+//       </ScrollView>
+//     </SafeAreaView>
+//   );
+// };
+
+// export default SignupScreen;
+
+import React, { useState } from 'react';
+import {
+  View,
+  Image,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  ScrollView,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+import styles from '../styles/SignupStyles';
+
+const SignupScreen = ({ navigation }) => {
+  const [isSignup, setIsSignup] = useState(true);
+  const [agree, setAgree] = useState(false);
+
+  // Floating label states
+  const [name, setName] = useState('');
+  const [nameFocus, setNameFocus] = useState(false);
+
+  const [email, setEmail] = useState('');
+  const [emailFocus, setEmailFocus] = useState(false);
+
+  const [mobile, setMobile] = useState('');
+  const [mobileFocus, setMobileFocus] = useState(false);
+
+  const [password, setPassword] = useState('');
+  const [passwordFocus, setPasswordFocus] = useState(false);
+
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [confirmPasswordFocus, setConfirmPasswordFocus] = useState(false);
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <ScrollView
+        contentContainerStyle={styles.scrollContainer}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Logo */}
+        <Image
+          source={require('../assets/logo.jpg')}
+          style={styles.logo}
+          resizeMode="contain"
+        />
+
+        {/* Top Section */}
+        <View style={styles.topSection}>
+          <Text style={styles.title}>
+            Signup now to access{'\n'}your personal account
+          </Text>
+        </View>
+
+        {/* White Card */}
+        <View style={styles.card}>
+          
+          {/* Toggle */}
+          <View style={styles.toggleContainer}>
+            <TouchableOpacity
+              style={[
+                styles.toggleButton,
+                isSignup && styles.activeToggle,
+              ]}
+              onPress={() => setIsSignup(true)}
+            >
+              <Text
+                style={[
+                  styles.toggleText,
+                  isSignup && styles.activeText,
+                ]}
+              >
+                Sign Up
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[
+                styles.toggleButton,
+                !isSignup && styles.activeToggle,
+              ]}
+              onPress={() => navigation.navigate('Login')}
+            >
+              <Text
+                style={[
+                  styles.toggleText,
+                  !isSignup && styles.activeText,
+                ]}
+              >
+                Log In
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* ===== Form Fields ===== */}
+
+          {/* Name */}
+          <View style={styles.inputContainer}>
+            <Text
+              style={[
+                styles.floatingLabel,
+                (nameFocus || name) && styles.floatingLabelActive,
+              ]}
+            >
+              Name
+            </Text>
+            <TextInput
+              style={styles.input}
+              value={name}
+              onChangeText={setName}
+              onFocus={() => setNameFocus(true)}
+              onBlur={() => setNameFocus(false)}
+            />
+          </View>
+
+          {/* Email */}
+          <View style={styles.inputContainer}>
+            <Text
+              style={[
+                styles.floatingLabel,
+                (emailFocus || email) && styles.floatingLabelActive,
+              ]}
+            >
+              E-mail ID
+            </Text>
+            <TextInput
+              style={styles.input}
+              value={email}
+              onChangeText={setEmail}
+              onFocus={() => setEmailFocus(true)}
+              onBlur={() => setEmailFocus(false)}
+              keyboardType="email-address"
+            />
+          </View>
+
+          {/* Mobile */}
+          <View style={styles.inputContainer}>
+            <Text
+              style={[
+                styles.floatingLabel,
+                (mobileFocus || mobile) && styles.floatingLabelActive,
+              ]}
+            >
+              Mobile number
+            </Text>
+            <TextInput
+              style={styles.input}
+              value={mobile}
+              onChangeText={setMobile}
+              onFocus={() => setMobileFocus(true)}
+              onBlur={() => setMobileFocus(false)}
+              keyboardType="phone-pad"
+            />
+          </View>
+
+          {/* Password */}
+          <View style={styles.inputContainer}>
+            <Text
+              style={[
+                styles.floatingLabel,
+                (passwordFocus || password) && styles.floatingLabelActive,
+              ]}
+            >
+              Password
+            </Text>
+            <TextInput
+              style={styles.input}
+              value={password}
+              onChangeText={setPassword}
+              onFocus={() => setPasswordFocus(true)}
+              onBlur={() => setPasswordFocus(false)}
+              secureTextEntry
+            />
+          </View>
+
+          {/* Confirm Password */}
+          <View style={styles.inputContainer}>
+            <Text
+              style={[
+                styles.floatingLabel,
+                (confirmPasswordFocus || confirmPassword) &&
+                  styles.floatingLabelActive,
+              ]}
+            >
+              Confirm Password
+            </Text>
+            <TextInput
+              style={styles.input}
+              value={confirmPassword}
+              onChangeText={setConfirmPassword}
+              onFocus={() => setConfirmPasswordFocus(true)}
+              onBlur={() => setConfirmPasswordFocus(false)}
+              secureTextEntry
+            />
+          </View>
+
+          {/* Terms */}
+          <View style={styles.termsRow}>
+            <TouchableOpacity
+              style={styles.checkbox}
+              onPress={() => setAgree(!agree)}
+            >
+              {agree && <View style={styles.checked} />}
+            </TouchableOpacity>
+
+            <Text style={styles.termsText}>
+              Agree Terms And Conditions.
+            </Text>
+          </View>
+
+          {/* Button */}
+          <TouchableOpacity style={styles.button}>
+            <Text style={styles.buttonText}>Sign Up</Text>
+          </TouchableOpacity>
+
+        </View>
+      </ScrollView>
+    </SafeAreaView>
+  );
+};
+
+export default SignupScreen;
