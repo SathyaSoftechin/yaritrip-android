@@ -513,6 +513,8 @@ color:"#777"
 
 rating:{
 color:"#FFD700"
+},
+flexOne:{
+  flex:1
 }
-
 });
