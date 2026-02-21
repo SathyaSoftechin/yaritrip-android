@@ -117,6 +117,7 @@
 // export default SignupScreen;
 
 import React, { useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   View,
   Image,
@@ -124,14 +125,18 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
+  Alert,
+  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
 import styles from '../styles/SignupStyles';
+
+const BASE_URL = 'http://10.0.2.2:8081';
 
 const SignupScreen = ({ navigation }) => {
   const [isSignup, setIsSignup] = useState(true);
   const [agree, setAgree] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   // Floating label states
   const [name, setName] = useState('');
@@ -148,6 +153,60 @@ const SignupScreen = ({ navigation }) => {
 
   const [confirmPassword, setConfirmPassword] = useState('');
   const [confirmPasswordFocus, setConfirmPasswordFocus] = useState(false);
+
+  // ── Register ───────────────────────────────────────────────────────────────
+  const handleSignup = async () => {
+    if (!name.trim()) {
+      Alert.alert('Error', 'Please enter your name');
+      return;
+    }
+    if (!email.trim()) {
+      Alert.alert('Error', 'Please enter your email');
+      return;
+    }
+    if (!password.trim()) {
+      Alert.alert('Error', 'Please enter a password');
+      return;
+    }
+    if (password !== confirmPassword) {
+      Alert.alert('Error', 'Passwords do not match');
+      return;
+    }
+    if (!agree) {
+      Alert.alert('Error', 'Please agree to Terms and Conditions');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await fetch(`${BASE_URL}/api/auth/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: name.trim(),
+          email: email.trim(),
+          password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        await AsyncStorage.setItem('token', data.token);
+        if (data.user) {
+          await AsyncStorage.setItem('user', JSON.stringify(data.user));
+        }
+        navigation.replace('Home');
+      } else {
+        Alert.alert('Registration Failed', data.message || 'Something went wrong');
+      }
+    } catch (error) {
+      console.log('Signup error:', error);
+      Alert.alert('Error', 'Unable to connect to server');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -171,45 +230,27 @@ const SignupScreen = ({ navigation }) => {
 
         {/* White Card */}
         <View style={styles.card}>
-          
+
           {/* Toggle */}
           <View style={styles.toggleContainer}>
             <TouchableOpacity
-              style={[
-                styles.toggleButton,
-                isSignup && styles.activeToggle,
-              ]}
+              style={[styles.toggleButton, isSignup && styles.activeToggle]}
               onPress={() => setIsSignup(true)}
             >
-              <Text
-                style={[
-                  styles.toggleText,
-                  isSignup && styles.activeText,
-                ]}
-              >
+              <Text style={[styles.toggleText, isSignup && styles.activeText]}>
                 Sign Up
               </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={[
-                styles.toggleButton,
-                !isSignup && styles.activeToggle,
-              ]}
+              style={[styles.toggleButton, !isSignup && styles.activeToggle]}
               onPress={() => navigation.navigate('Login')}
             >
-              <Text
-                style={[
-                  styles.toggleText,
-                  !isSignup && styles.activeText,
-                ]}
-              >
+              <Text style={[styles.toggleText, !isSignup && styles.activeText]}>
                 Log In
               </Text>
             </TouchableOpacity>
           </View>
-
-          {/* ===== Form Fields ===== */}
 
           {/* Name */}
           <View style={styles.inputContainer}>
@@ -319,15 +360,20 @@ const SignupScreen = ({ navigation }) => {
             >
               {agree && <View style={styles.checked} />}
             </TouchableOpacity>
-
-            <Text style={styles.termsText}>
-              Agree Terms And Conditions.
-            </Text>
+            <Text style={styles.termsText}>Agree Terms And Conditions.</Text>
           </View>
 
           {/* Button */}
-          <TouchableOpacity style={styles.button}>
-            <Text style={styles.buttonText}>Sign Up</Text>
+          <TouchableOpacity
+            style={[styles.button, loading ]}
+            onPress={handleSignup}
+            disabled={loading}
+          >
+            {loading ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text style={styles.buttonText}>Sign Up</Text>
+            )}
           </TouchableOpacity>
 
         </View>

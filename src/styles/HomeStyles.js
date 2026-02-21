@@ -227,4 +227,39 @@ horizontalPadding: {
   },
 
   bannerSub: { color: '#fff', fontSize: 12 },
+  bottomNavWrapper: {
+  position: 'absolute',
+  bottom: 20,
+  width: '100%',
+  alignItems: 'center',
+},
+
+bottomNav: {
+  flexDirection: 'row',
+  backgroundColor: '#000',
+  width: '75%',
+  justifyContent: 'space-around',
+  alignItems: 'center',
+  paddingVertical: 15,
+  borderRadius: 40,
+  elevation: 10,
+},
+
+navItem: {
+  backgroundColor: '#fff',
+  width: 50,
+  height: 50,
+  borderRadius: 25,
+  justifyContent: 'center',
+  alignItems: 'center',
+},
+
+navItemActive: {
+  backgroundColor: '#fff',
+  width: 55,
+  height: 55,
+  borderRadius: 28,
+  justifyContent: 'center',
+  alignItems: 'center',
+},
 });

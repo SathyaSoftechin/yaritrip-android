@@ -117,8 +117,8 @@ export default StyleSheet.create({
   },
 
   logo: {
-    width: 230,
-    height: 260,
+    width: 130,
+    height: 140,
     backgroundColor:'#ffffff',
   },
 });

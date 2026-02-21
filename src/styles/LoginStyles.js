@@ -277,6 +277,15 @@ export default StyleSheet.create({
     paddingHorizontal: 34,
     paddingVertical: 22,
   },
+  passwordRow: {
+  flexDirection: 'row',
+  alignItems: 'center',
+},
+
+eyeIcon: {
+  position: 'absolute',
+  right: 15,
+},
 
   /* ================================ */
 
@@ -381,5 +390,6 @@ export default StyleSheet.create({
 
   register: {
     fontWeight: '700',
+    color:'#0b40f0',
   },
 });

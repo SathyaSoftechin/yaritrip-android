@@ -534,8 +534,6 @@ const HomeScreen = () => {
               <Text style={styles.perPerson}>
                 per person
               </Text>
-              
-
             </View>
           </View>
         ))}
@@ -554,6 +552,23 @@ const HomeScreen = () => {
           <Text style={styles.bannerSub}>
             5-star stays with complimentary desert safari
           </Text>
+          <View style={styles.bottomNavWrapper}>
+  <View style={styles.bottomNav}>
+    
+    <TouchableOpacity style={styles.navItemActive}>
+      <Ionicons name="home" size={22} color="#4C6EDB" />
+    </TouchableOpacity>
+
+    <TouchableOpacity style={styles.navItem}>
+      <Ionicons name="briefcase" size={22} color="#777" />
+    </TouchableOpacity>
+
+    <TouchableOpacity style={styles.navItem}>
+      <Ionicons name="person-circle" size={22} color="#777" />
+    </TouchableOpacity>
+
+  </View>
+</View>
         </View>
       </View>
 
