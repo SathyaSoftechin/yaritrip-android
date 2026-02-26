@@ -18,7 +18,6 @@ expo-env.d.ts
 android/app/build/
 android/build/
 android/.gradle/
-android/gradle/
 android/local.properties
 *.keystore
 *.jks
