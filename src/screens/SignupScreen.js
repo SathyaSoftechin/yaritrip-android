@@ -1,4 +1,5 @@
 // import React, { useState } from 'react';
+// import AsyncStorage from '@react-native-async-storage/async-storage';
 // import {
 //   View,
 //   Image,
@@ -6,14 +7,106 @@
 //   TextInput,
 //   TouchableOpacity,
 //   ScrollView,
+//   Alert,
+//   ActivityIndicator,
 // } from 'react-native';
 // import { SafeAreaView } from 'react-native-safe-area-context';
-
 // import styles from '../styles/SignupStyles';
+// import { authAPI } from '../services/api';
+// import { useAuth } from '../hooks/AuthContext';
 
-// const SignupScreen = ({navigation}) => {
+// const SignupScreen = ({ navigation }) => {
+
+//   const { login } = useAuth();
+
 //   const [isSignup, setIsSignup] = useState(true);
 //   const [agree, setAgree] = useState(false);
+//   const [loading, setLoading] = useState(false);
+
+//   const [name, setName] = useState('');
+//   const [nameFocus, setNameFocus] = useState(false);
+
+//   const [email, setEmail] = useState('');
+//   const [emailFocus, setEmailFocus] = useState(false);
+
+//   const [mobile, setMobile] = useState('');
+//   const [mobileFocus, setMobileFocus] = useState(false);
+
+//   const [password, setPassword] = useState('');
+//   const [passwordFocus, setPasswordFocus] = useState(false);
+
+//   const [confirmPassword, setConfirmPassword] = useState('');
+//   const [confirmPasswordFocus, setConfirmPasswordFocus] = useState(false);
+
+//   const handleSignup = async () => {
+
+//     if (!name.trim()) {
+//       Alert.alert('Error', 'Please enter your name');
+//       return;
+//     }
+
+//     if (!email.trim()) {
+//       Alert.alert('Error', 'Please enter your email');
+//       return;
+//     }
+
+//     if (!password.trim()) {
+//       Alert.alert('Error', 'Please enter a password');
+//       return;
+//     }
+
+//     if (password !== confirmPassword) {
+//       Alert.alert('Error', 'Passwords do not match');
+//       return;
+//     }
+
+//     if (!agree) {
+//       Alert.alert('Error', 'Please agree to Terms and Conditions');
+//       return;
+//     }
+
+//     setLoading(true);
+
+//     try {
+
+//       const { ok, data } = await authAPI.register({
+//         name: name.trim(),
+//         email: email.trim(),
+//         password,
+//       });
+
+//       if (ok) {
+
+//         await AsyncStorage.setItem('token', data.token);
+
+//         if (data.user) {
+//           await AsyncStorage.setItem('user', JSON.stringify(data.user));
+//         }
+
+//         await login(data.token, data.user || null);
+
+//         navigation.replace('Home');
+
+//       } else {
+
+//         Alert.alert(
+//           'Registration Failed',
+//           data.message || 'Something went wrong'
+//         );
+
+//       }
+
+//     } catch (error) {
+
+//       console.log('Signup error:', error);
+//       Alert.alert('Error', 'Unable to connect to server');
+
+//     } finally {
+
+//       setLoading(false);
+
+//     }
+//   };
 
 //   return (
 //     <SafeAreaView style={styles.container}>
@@ -21,75 +114,143 @@
 //         contentContainerStyle={styles.scrollContainer}
 //         showsVerticalScrollIndicator={false}
 //       >
-//         {/* Top Blue Section */}
+
 //         <Image
-//                     source={require('../assets/logo1.jpeg')}
-//                     style={styles.logo}
-//                     resizeMode="contain"
-//                   />
+//           source={require('../assets/logo.jpg')}
+//           style={styles.logo}
+//           resizeMode="contain"
+//         />
+
 //         <View style={styles.topSection}>
 //           <Text style={styles.title}>
 //             Signup now to access{'\n'}your personal account
 //           </Text>
 //         </View>
 
-//         {/* White Rounded Card */}
 //         <View style={styles.card}>
-          
-//           {/* Toggle */}
+
 //           <View style={styles.toggleContainer}>
+
 //             <TouchableOpacity
-//               style={[
-//                 styles.toggleButton,
-//                 isSignup && styles.activeToggle,
-//               ]}
+//               style={[styles.toggleButton, isSignup && styles.activeToggle]}
 //               onPress={() => setIsSignup(true)}
 //             >
-//               <Text
-//                 style={[
-//                   styles.toggleText,
-//                   isSignup && styles.activeText,
-//                 ]}
-//               >
+//               <Text style={[styles.toggleText, isSignup && styles.activeText]}>
 //                 Sign Up
 //               </Text>
 //             </TouchableOpacity>
 
 //             <TouchableOpacity
-//   style={[
-//     styles.toggleButton,
-//     !isSignup && styles.activeToggle,
-//   ]}
-//   onPress={() => navigation.navigate('Login')}
-// >
-//   <Text
-//     style={[
-//       styles.toggleText,
-//       !isSignup && styles.activeText,
-//     ]}
-//   >
-//     Log In
-//   </Text>
-// </TouchableOpacity>
+//               style={[styles.toggleButton, !isSignup && styles.activeToggle]}
+//               onPress={() => navigation.navigate('Login')}
+//             >
+//               <Text style={[styles.toggleText, !isSignup && styles.activeText]}>
+//                 Log In
+//               </Text>
+//             </TouchableOpacity>
+
 //           </View>
 
-//           {/* Form */}
-//           <Text style={styles.label}>Name</Text>
-//           <TextInput style={styles.input} />
+//           <View style={styles.inputContainer}>
+//             <Text
+//               style={[
+//                 styles.floatingLabel,
+//                 (nameFocus || name) && styles.floatingLabelActive,
+//               ]}
+//             >
+//               Name
+//             </Text>
 
-//           <Text style={styles.label}>E-mail ID</Text>
-//           <TextInput style={styles.input} />
+//             <TextInput
+//               style={styles.input}
+//               value={name}
+//               onChangeText={setName}
+//               onFocus={() => setNameFocus(true)}
+//               onBlur={() => setNameFocus(false)}
+//             />
+//           </View>
 
-//           <Text style={styles.label}>Mobile number</Text>
-//           <TextInput style={styles.input} keyboardType="phone-pad" />
+//           <View style={styles.inputContainer}>
+//             <Text
+//               style={[
+//                 styles.floatingLabel,
+//                 (emailFocus || email) && styles.floatingLabelActive,
+//               ]}
+//             >
+//               E-mail ID
+//             </Text>
 
-//           <Text style={styles.label}>Password</Text>
-//           <TextInput style={styles.input} secureTextEntry />
+//             <TextInput
+//               style={styles.input}
+//               value={email}
+//               onChangeText={setEmail}
+//               onFocus={() => setEmailFocus(true)}
+//               onBlur={() => setEmailFocus(false)}
+//               keyboardType="email-address"
+//             />
+//           </View>
 
-//           <Text style={styles.label}>Confirm Password</Text>
-//           <TextInput style={styles.input} secureTextEntry />
+//           <View style={styles.inputContainer}>
+//             <Text
+//               style={[
+//                 styles.floatingLabel,
+//                 (mobileFocus || mobile) && styles.floatingLabelActive,
+//               ]}
+//             >
+//               Mobile number
+//             </Text>
 
-//           {/* Terms */}
+//             <TextInput
+//               style={styles.input}
+//               value={mobile}
+//               onChangeText={setMobile}
+//               onFocus={() => setMobileFocus(true)}
+//               onBlur={() => setMobileFocus(false)}
+//               keyboardType="phone-pad"
+//             />
+//           </View>
+
+//           <View style={styles.inputContainer}>
+//             <Text
+//               style={[
+//                 styles.floatingLabel,
+//                 (passwordFocus || password) && styles.floatingLabelActive,
+//               ]}
+//             >
+//               Password
+//             </Text>
+
+//             <TextInput
+//               style={styles.input}
+//               value={password}
+//               onChangeText={setPassword}
+//               onFocus={() => setPasswordFocus(true)}
+//               onBlur={() => setPasswordFocus(false)}
+//               secureTextEntry
+//             />
+//           </View>
+
+//           <View style={styles.inputContainer}>
+//             <Text
+//               style={[
+//                 styles.floatingLabel,
+//                 (confirmPasswordFocus || confirmPassword) &&
+//                   styles.floatingLabelActive,
+//               ]}
+//             >
+//               Confirm Password
+//             </Text>
+
+//             <TextInput
+//               style={styles.input}
+//               value={confirmPassword}
+//               onChangeText={setConfirmPassword}
+//               onFocus={() => setConfirmPasswordFocus(true)}
+//               onBlur={() => setConfirmPasswordFocus(false)}
+//               secureTextEntry
+//             />
+//           </View>
+
 //           <View style={styles.termsRow}>
 //             <TouchableOpacity
 //               style={styles.checkbox}
@@ -103,12 +264,19 @@
 //             </Text>
 //           </View>
 
-//           {/* Button */}
-//           <TouchableOpacity style={styles.button}>
-//             <Text style={styles.buttonText}>Sign Up</Text>
+//           <TouchableOpacity
+//             style={[styles.button, loading]}
+//             onPress={handleSignup}
+//             disabled={loading}
+//           >
+//             {loading
+//               ? <ActivityIndicator color="#fff" />
+//               : <Text style={styles.buttonText}>Sign Up</Text>
+//             }
 //           </TouchableOpacity>
 
 //         </View>
+
 //       </ScrollView>
 //     </SafeAreaView>
 //   );

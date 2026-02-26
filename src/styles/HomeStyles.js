@@ -35,8 +35,8 @@ export default StyleSheet.create({
   },
 
   iconCircle: {
-    width: 34,
-    height: 34,
+    width: 100,
+    height: 100,
     borderRadius: 17,
     backgroundColor: '#ffffff33',
     justifyContent: 'center',
@@ -261,5 +261,23 @@ navItemActive: {
   borderRadius: 28,
   justifyContent: 'center',
   alignItems: 'center',
+},
+navText: {
+  fontSize: 11,
+  color: "#777",
+},
+
+navTextActive: {
+  fontSize: 11,
+  color: "#4C6EDB",
+  fontWeight: "600",
+},
+
+screen: {
+  flex: 1,
+},
+
+scrollPadding: {
+  paddingBottom: 120,
 },
 });

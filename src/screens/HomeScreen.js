@@ -335,7 +335,7 @@
 //     );
 //   };
 // export default HomeScreen;
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -353,7 +353,12 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 
 import styles from '../styles/HomeStyles';
 
-const categories = ['Packages', 'Flights', 'Cars', 'Hotels'];
+const categories = [
+  { name: "Packages", icon: "briefcase" },
+  { name: "Flights", icon: "airplane" },
+  { name: "Cars", icon: "car" },
+  { name: "Hotels", icon: "bed" },
+];
 
 const destinations = [
   { id: '1', name: 'Maldives', image: require('../assets/maldives.jpg') },
@@ -362,13 +367,15 @@ const destinations = [
   { id: '4', name: 'Maui', image: require('../assets/maui.jpg') },
   { id: '5', name: 'Phuket', image: require('../assets/phuket.jpg') },
 ];
-
-const HomeScreen = () => {
+const HomeScreen = ({ navigation }) => {
+  const [activeTab, setActiveTab] = useState("Packages");
   return (
-    <ScrollView
-      style={styles.container}
-      showsVerticalScrollIndicator={false}
-    >
+ <View style={styles.screen}>
+  <ScrollView
+    style={styles.container}
+    showsVerticalScrollIndicator={false}
+contentContainerStyle={styles.scrollPadding}
+  >
 
       {/* HEADER */}
       <ImageBackground
@@ -387,7 +394,7 @@ const HomeScreen = () => {
             <View style={styles.iconCircle}>
               <Ionicons
                 name="notifications-outline"
-                size={18}
+                size={28}
                 color="#000000"
               />
             </View>
@@ -447,18 +454,25 @@ const HomeScreen = () => {
         {categories.map((item, index) => (
           <TouchableOpacity
             key={index}
+            onPress={() => setActiveTab(item.name)}
             style={[
               styles.tab,
-              index === 0 && styles.activeTab,
+              activeTab === item.name && styles.activeTab,
             ]}
           >
+          <MaterialCommunityIcons
+              name={item.icon}
+              size={16}
+              color={activeTab === item.name ? "#4C6EDB" : "#777"}
+            />
+
             <Text
               style={[
                 styles.tabText,
-                index === 0 && styles.activeTabText,
+                activeTab === item.name  && styles.activeTabText,
               ]}
             >
-              {item}
+              {item.name}
             </Text>
           </TouchableOpacity>
         ))}
@@ -491,7 +505,11 @@ const HomeScreen = () => {
         contentContainerStyle={styles.padding15}
       >
         {[1, 2].map((item) => (
-          <View key={item} style={styles.card}>
+  <TouchableOpacity
+    key={item}
+    style={styles.card}
+    onPress={() => navigation.navigate("CardDetails")}
+  >
             <Image
               source={require('../assets/maldives.jpg')}
               style={styles.cardImage}
@@ -535,8 +553,9 @@ const HomeScreen = () => {
                 per person
               </Text>
             </View>
-          </View>
+          </TouchableOpacity>
         ))}
+        
       </ScrollView>
 
       {/* DUBAI BANNER */}
@@ -552,27 +571,106 @@ const HomeScreen = () => {
           <Text style={styles.bannerSub}>
             5-star stays with complimentary desert safari
           </Text>
-          <View style={styles.bottomNavWrapper}>
+        </View>
+      </View>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.padding15}
+      >
+        {[1, 2].map((item) => (
+  <TouchableOpacity
+    key={item}
+    style={styles.card}
+    onPress={() => navigation.navigate("CardDetails")}
+  >
+            <Image
+              source={require('../assets/maldives.jpg')}
+              style={styles.cardImage}
+            />
+
+            <View style={styles.exclusiveBadge}>
+              <Text style={styles.exclusiveText}>+ Exclusive</Text>
+            </View>
+
+            <View style={styles.heartIcon}>
+              <Ionicons name="heart" size={16} color="red" />
+            </View>
+
+            <View style={styles.cardContent}>
+              <Text style={styles.packageTitle}>
+                Maldives Paradise
+              </Text>
+              <Text style={styles.location}>
+                Maldives • 5N/6D
+              </Text>
+              <Text style={styles.rating}>
+                4.9 (1284 reviews)
+              </Text>
+
+              <View style={styles.iconRow}>
+                <MaterialCommunityIcons name="airplane" size={16} />
+                <MaterialCommunityIcons name="bed" size={16} />
+                <MaterialCommunityIcons
+                  name="silverware-fork-knife"
+                  size={16}
+                />
+                <MaterialCommunityIcons name="wifi" size={16} />
+              </View>
+
+              <View style={styles.priceRow}>
+                <Text style={styles.price}>₹89,999</Text>
+                <Text style={styles.oldPrice}>₹1,49,999</Text>
+              </View>
+
+              <Text style={styles.perPerson}>
+                per person
+              </Text>
+            </View>
+          </TouchableOpacity>
+        ))}
+        
+      </ScrollView>
+      </ScrollView>
+       {/* FIXED BOTTOM NAVIGATION */}
+<View style={styles.bottomNavWrapper}>
+
   <View style={styles.bottomNav}>
-    
-    <TouchableOpacity style={styles.navItemActive}>
-      <Ionicons name="home" size={22} color="#4C6EDB" />
+
+    {/* HOME (ACTIVE) */}
+    <TouchableOpacity
+      style={styles.navItem}
+      onPress={() => navigation.navigate("Home")}
+    >
+      <View style={styles.iconCircleActive}>
+        <Ionicons name="home" size={22} color="#fff" />
+      </View>
     </TouchableOpacity>
 
-    <TouchableOpacity style={styles.navItem}>
-      <Ionicons name="briefcase" size={22} color="#777" />
+    {/* PACKAGES */}
+    <TouchableOpacity
+      style={styles.navItem}
+      onPress={() => navigation.navigate("Packages")}
+    >
+      <View style={styles.iconCircle}>
+        <Ionicons name="briefcase-outline" size={22} color="#777" />
+      </View>
     </TouchableOpacity>
 
-    <TouchableOpacity style={styles.navItem}>
-      <Ionicons name="person-circle" size={22} color="#777" />
+    {/* PROFILE */}
+    <TouchableOpacity
+      style={styles.navItem}
+      onPress={() => navigation.navigate("Profile")}
+    >
+      <View style={styles.iconCircle}>
+        <Ionicons name="person-circle-outline" size={22} color="#777" />
+      </View>
     </TouchableOpacity>
 
   </View>
 </View>
-        </View>
-      </View>
-
-    </ScrollView>
+</View>
+    
   );
 };
 

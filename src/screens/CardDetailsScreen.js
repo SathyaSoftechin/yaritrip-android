@@ -745,17 +745,17 @@ import {
 } from "react-native";
 
 import Ionicons from "react-native-vector-icons/Ionicons";
-import styles from "../styles/MaldivesDetailsStyles";
+import styles from "../styles/CardDetailsStyles";
 
 const { width } = Dimensions.get("window");
 
 const images = [
-  require("../../assets/maldives.jpg"),
-  require("../../assets/maldives.jpg"),
-  require("../../assets/maldives.jpg"),
+  require("../assets/maldives.jpg"),
+  require("../assets/maldives.jpg"),
+  require("../assets/maldives.jpg"),
 ];
 
-const MaldivesDetailsScreen = () => {
+const MaldivesDetailsScreen = ({ navigation }) => {
   const [activeImage, setActiveImage] = useState(0);
 
   return (
@@ -873,18 +873,18 @@ const MaldivesDetailsScreen = () => {
 
         <View style={styles.transportCard}>
           <Image
-            source={require("../../assets/car.jpg")}
+            source={require("../assets/car.jpg")}
             style={styles.transportImg}
           />
 
-          <View style={{ flex: 1 }}>
+          <View style={styles.flexOne}>
             <Text style={styles.transportTitle}>Private Transport</Text>
             <Text style={styles.transportSub}>
               Airport to hotel in Maldives
             </Text>
           </View>
         </View>
-      </View>
+        </View>
 
       {/* Hotel */}
       <View style={styles.section}>
@@ -892,7 +892,7 @@ const MaldivesDetailsScreen = () => {
 
         <View style={styles.hotelCard}>
           <Image
-            source={require("../../assets/hotel.jpg")}
+            source={require("../assets/hotel.jpg")}
             style={styles.hotelImg}
           />
 

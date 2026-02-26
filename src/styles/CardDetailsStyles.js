@@ -317,7 +317,9 @@ flex:1,
 backgroundColor:"#F4F6FB",
 padding:16
 },
-
+flexOne: {
+    flex: 1,
+  },
 header:{
 flexDirection:"row",
 justifyContent:"space-between",
@@ -514,7 +516,4 @@ color:"#777"
 rating:{
 color:"#FFD700"
 },
-flexOne:{
-  flex:1
-}
 });
