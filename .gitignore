@@ -1,77 +1,59 @@
-# ===== Node =====
+# ===============================
+# Node
+# ===============================
 node_modules/
 npm-debug.log
 yarn-error.log
-yarn-debug.log
 package-lock.json
-yarn.lock
 
-# ===== React Native =====
+# ===============================
+# React Native
+# ===============================
 .expo/
 .expo-shared/
-expo-env.d.ts
+.bundle/
+dist/
 
-# Metro Bundler
-.metro-health-check*
-
-# ===== Android =====
-android/app/build/
-android/build/
+# ===============================
+# Android
+# ===============================
 android/.gradle/
+android/build/
+android/app/build/
+android/.cxx/
 android/local.properties
+android/app/debug.keystore
 *.keystore
-*.jks
-*.iml
 
-# ===== iOS =====
+# ===============================
+# iOS
+# ===============================
 ios/build/
 ios/Pods/
-ios/*.xcworkspace
-ios/*.xcuserdata
-ios/*.xcuserstate
+ios/.symlinks/
 ios/DerivedData/
 *.xcworkspace
 *.xcuserdata
+*.xcuserstate
 
-# CocoaPods
-Pods/
+# ===============================
+# Metro
+# ===============================
+.metro-health-check*
 
-# ===== macOS =====
-.DS_Store
-
-# ===== Windows =====
-Thumbs.db
-
-# ===== Environment files =====
-.env
-.env.*
-.env.local
-
-# ===== Logs =====
+# ===============================
+# Logs
+# ===============================
 *.log
 
-# ===== Coverage =====
-coverage/
+# ===============================
+# Environment
+# ===============================
+.env
+.env.*
 
-# ===== VS Code =====
-.vscode/
-
-# ===== IntelliJ / Android Studio =====
-.idea/
-*.swp
-*.swo
-
-# ===== Temporary =====
-*.tmp
-*.bak
-
-# ===== Build outputs =====
-build/
-dist/
-
-# ===== Firebase =====
-google-services.json
-GoogleService-Info.plist
-
-# ===== Debug files =====
-*.origin
+# ===============================
+# OS Files
+# ===============================
+.DS_Store
+Thumbs.db

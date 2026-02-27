@@ -1,299 +1,157 @@
-// import { StyleSheet } from 'react-native';
-
-// export default StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     backgroundColor: '#202c5e',
-//   },
-
-//   keyboardContainer: {
-//     flex: 1,
-//   },
-
-//   scrollContainer: {
-//     flexGrow: 1,
-//   },
-
-//   header: {
-//     paddingHorizontal: 25,
-//     paddingTop: 50,
-//     paddingBottom: 40,
-//   },
-
-//   headerText: {
-//     color: '#fff',
-//     fontSize: 20,
-//     fontWeight: '600',
-//   },
-
-//   card: {
-//     flex: 1,
-//     backgroundColor: '#F2F2F2',
-//     borderTopLeftRadius: 35,
-//     borderTopRightRadius: 35,
-//     padding: 25,
-//   },
-
-//   toggleContainer: {
-//     flexDirection: 'row',
-//     backgroundColor: '#E0E0E0',
-//     borderRadius: 30,
-//     padding: 4,
-//     marginBottom: 25,
-//   },
-
-//   activeTab: {
-//     flex: 1,
-//     backgroundColor: '#7D9AF2',
-//     paddingVertical: 10,
-//     borderRadius: 25,
-//     alignItems: 'center',
-//   },
-
-//   inactiveTab: {
-//     flex: 1,
-//     paddingVertical: 10,
-//     alignItems: 'center',
-//   },
-
-//   activeText: {
-//     color: '#000',
-//     fontWeight: '600',
-//   },
-
-//   inactiveText: {
-//     color: '#444',
-//   },
-
-//   label: {
-//     marginBottom: 6,
-//     marginTop: 10,
-//     fontSize: 13,
-//     color: '#333',
-//   },
-
-//   input: {
-//     backgroundColor: '#E6E6E6',
-//     borderRadius: 12,
-//     padding: 14,
-//     marginBottom: 12,
-//   },
-
-//   rowBetween: {
-//     flexDirection: 'row',
-//     justifyContent: 'space-between',
-//     alignItems: 'center',
-//     marginVertical: 10,
-//   },
-
-//   rememberRow: {
-//     flexDirection: 'row',
-//     alignItems: 'center',
-//   },
-
-//   checkbox: {
-//     width: 18,
-//     height: 18,
-//     borderRadius: 6,
-//     backgroundColor: '#D9D9D9',
-//     marginRight: 8,
-//     justifyContent: 'center',
-//     alignItems: 'center',
-//   },
-
-//   checked: {
-//     width: 10,
-//     height: 10,
-//     backgroundColor: '#324E9F',
-//     borderRadius: 3,
-//   },
-
-//   rememberText: {
-//     fontSize: 12,
-//   },
-
-//   forgotText: {
-//     fontSize: 12,
-//     fontWeight: '500',
-//   },
-
-//   button: {
-//     backgroundColor: '#4C6EDB',
-//     paddingVertical: 16,
-//     borderRadius: 30,
-//     alignItems: 'center',
-//     marginTop: 10,
-//   },
-
-//   buttonText: {
-//     color: '#fff',
-//     fontWeight: '600',
-//     fontSize: 15,
-//   },
-
-//   orRow: {
-//     flexDirection: 'row',
-//     alignItems: 'center',
-//     marginVertical: 20,
-//   },
-
-//   line: {
-//     flex: 1,
-//     height: 1,
-//     backgroundColor: '#ccc',
-//   },
-
-//   orText: {
-//     marginHorizontal: 10,
-//     color: '#555',
-//     fontSize: 13,
-//   },
-
-//   socialRow: {
-//     flexDirection: 'row',
-//     justifyContent: 'space-evenly',
-//     marginBottom: 20,
-//   },
-
-//   socialBox: {
-//     width: 60,
-//     height: 60,
-//     backgroundColor: '#E0E0E0',
-//     borderRadius: 15,
-//     justifyContent: 'center',
-//     alignItems: 'center',
-//     elevation: 3,
-//   },
-
-//   socialIcon: {
-//     fontSize: 22,
-//     fontWeight: 'bold',
-//   },
-
-//   bottomText: {
-//     textAlign: 'center',
-//     fontSize: 13,
-//   },
-
-//   register: {
-//     fontWeight: '600',
-//   },
-// });
 import { StyleSheet } from 'react-native';
 
 export default StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#202c5e',
-  },
-
-  keyboardContainer: {
-    flex: 1,
+    backgroundColor: '#223E86',
   },
 
   scrollContainer: {
     flexGrow: 1,
   },
 
-  header: {
-    paddingHorizontal: 25,
-    paddingTop: 100,
-    paddingBottom: 40,
+ header: {
+    paddingHorizontal: 28,
+    paddingTop: 30,
+    paddingBottom: 36,
+    alignItems: 'flex-start',
+  },
+
+  logo: {
+    width: 180,   // increased from 140
+    height: 64,   // increased from 50
+    marginBottom: 0,
+    marginLeft: -40,
   },
 
   headerText: {
-    color: '#fff',
-    fontSize: 20,
+    color: '#d0d8f5',
+    fontSize: 22,
     fontWeight: '700',
+    lineHeight: 32,
   },
 
   card: {
     flex: 1,
-    backgroundColor: '#F2F2F2',
-    borderTopLeftRadius: 55,
-    borderTopRightRadius: 55,
-    padding: 45,
+    backgroundColor: '#F4F5FA',
+    borderTopLeftRadius: 40,
+    borderTopRightRadius: 40,
+    paddingHorizontal: 28,
+    paddingTop: 32,
+    paddingBottom: 48,
   },
 
   toggleContainer: {
     flexDirection: 'row',
-    backgroundColor: '#E0E0E0',
+    backgroundColor: '#E2E4EE',
     borderRadius: 30,
-    padding: 14,
-    marginBottom: 25,
+    padding: 5,
+    marginBottom: 28,
   },
 
   activeTab: {
     flex: 1,
-    backgroundColor: '#7D9AF2',
-    paddingVertical: 10,
+    backgroundColor: '#223E86',
+    paddingVertical: 11,
     borderRadius: 25,
     alignItems: 'center',
+    shadowColor: '#223E86',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.35,
+    shadowRadius: 6,
+    elevation: 4,
   },
 
   inactiveTab: {
     flex: 1,
-    paddingVertical: 10,
+    paddingVertical: 11,
     alignItems: 'center',
   },
 
   activeText: {
-    color: '#3e3c3c',
+    color: '#fff',
     fontWeight: '700',
+    fontSize: 14,
   },
 
   inactiveText: {
-    color: '#0d0909',
+    color: '#6b7280',
+    fontWeight: '600',
+    fontSize: 14,
   },
 
-  /* ===== Floating Input Styles ===== */
-
-  inputContainer: {
+  // Floating label input
+  inputWrapper: {
     marginBottom: 20,
     position: 'relative',
   },
 
   floatingLabel: {
     position: 'absolute',
-    left: 16,
-    top: 18,
-    fontSize: 15,
-    color: '#0e0e0e',
+    left: 48,
+    top: 17,
+    fontSize: 14,
+    color: '#9ca3af',
     zIndex: 1,
+    backgroundColor: 'transparent',
   },
 
   floatingLabelActive: {
-    top: -16,
-    fontSize: 15,
-    fontWeight: 'bold',
-    color: '#0c0c0c',
-    backgroundColor: '#F2F2F2',
+    top: -9,
+    left: 12,
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#223E86',
+    backgroundColor: '#F4F5FA',
     paddingHorizontal: 4,
+    zIndex: 2,
+  },
+
+  inputBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderRadius: 14,
+    borderWidth: 1.5,
+    borderColor: '#e5e7eb',
+    paddingHorizontal: 14,
+    height: 54,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 3,
+    elevation: 1,
+  },
+
+  inputBoxFocused: {
+    borderColor: '#223E86',
+    shadowColor: '#223E86',
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    elevation: 3,
+  },
+
+  inputIcon: {
+    marginRight: 10,
   },
 
   input: {
-    backgroundColor: '#cccccc',
-    borderRadius: 9,
-    paddingHorizontal: 34,
-    paddingVertical: 22,
+    flex: 1,
+    fontSize: 15,
+    color: '#1f2937',
+    paddingVertical: 0,
   },
-  passwordRow: {
-  flexDirection: 'row',
-  alignItems: 'center',
-},
 
-eyeIcon: {
-  position: 'absolute',
-  right: 15,
-},
-
-  /* ================================ */
+  eyeBtn: {
+    padding: 4,
+  },
 
   rowBetween: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginVertical: 20,
+    marginVertical: 4,
+    marginBottom: 24,
   },
 
   rememberRow: {
@@ -304,92 +162,118 @@ eyeIcon: {
   checkbox: {
     width: 20,
     height: 20,
-    borderRadius: 1,
-    backgroundColor: '#969696',
-    marginRight: 10, 
+    borderRadius: 5,
+    borderWidth: 1.5,
+    borderColor: '#d1d5db',
+    backgroundColor: '#fff',
+    marginRight: 8,
     justifyContent: 'center',
     alignItems: 'center',
   },
 
-  checked: {
-    width: 10,
-    height: 10,
-    backgroundColor: '#0a0a0a',
-    borderRadius: 3,
+  checkboxChecked: {
+    backgroundColor: '#223E86',
+    borderColor: '#223E86',
   },
 
   rememberText: {
     fontSize: 13,
-    fontWeight: '700',
+    color: '#374151',
+    fontWeight: '500',
   },
 
   forgotText: {
     fontSize: 13,
-    fontWeight: '700',
+    color: '#223E86',
+    fontWeight: '600',
   },
 
   button: {
-    backgroundColor: '#4C6EDB',
+    backgroundColor: '#223E86',
     paddingVertical: 16,
     borderRadius: 30,
     alignItems: 'center',
-    marginTop: 10,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    shadowColor: '#223E86',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.4,
+    shadowRadius: 12,
+    elevation: 6,
   },
 
   buttonText: {
     color: '#fff',
     fontWeight: '700',
-    fontSize: 15,
+    fontSize: 16,
+    letterSpacing: 0.3,
   },
 
   orRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: 20,
+    marginVertical: 22,
   },
 
   line: {
     flex: 1,
     height: 1,
-    backgroundColor: '#a09a9a',
+    backgroundColor: '#e5e7eb',
   },
 
   orText: {
-    marginHorizontal: 10,
-    color: '#040404',
+    marginHorizontal: 12,
+    color: '#9ca3af',
     fontSize: 13,
-    fontWeight: '700',
+    fontWeight: '500',
   },
 
-  socialRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-evenly',
-    marginBottom: 20,
-  },
+ socialRow: {
+  flexDirection: 'row',
+  justifyContent: 'center',   // center them
+  marginBottom: 24,
+  gap: 18,                    // spacing between icons
+},
 
-  socialBox: {
-    width: 60,
-    height: 60,
-    backgroundColor: '#b2acac',
-    borderRadius: 15,
-    justifyContent: 'center',
-    alignItems: 'center',
-    elevation: 3,
-  },
+socialBtn: {
+  alignItems: 'center',
+  justifyContent: 'center',
 
-  socialIcon: {
-    fontSize: 22,
-    fontWeight: 'bold',
+  padding: 8,                 // thin padding
+  borderRadius: 10,           // small rounding (or remove)
+
+  backgroundColor: '#fff',
+  borderWidth: 1,
+  borderColor: '#e5e7eb',
+
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.05,
+  shadowRadius: 4,
+  elevation: 2,
+},
+
+socialLogo: {
+  width: 32,
+  height: 32,
+  resizeMode: 'contain',
+},
+
+  socialBtnText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#374151',
   },
 
   bottomText: {
     textAlign: 'center',
-    fontSize: 13,
-    fontWeight: '700',
+    fontSize: 14,
+    color: '#6b7280',
+    fontWeight: '400',
   },
 
   register: {
     fontWeight: '700',
-    color:'#0b40f0',
+    color: '#223E86',
   },
 });
