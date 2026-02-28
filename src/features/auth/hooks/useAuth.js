@@ -22,7 +22,6 @@ const useAuth = (navigation) => {
       const data = await loginUser(email, password);
       setAuth(data.user, data.token);
       Alert.alert('Login Successfull','Logged in')
-      navigation.replace('HomeScreen');
     } catch (error) {
       const message =
         error?.response?.data?.message || 'Login failed. Please try again.';
