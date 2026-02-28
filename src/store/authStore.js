@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-const useAuthStore = create((set) => ({
+export const useAuthStore = create((set) => ({
   user: null,
   token: null,
   isAuthenticated: false,
@@ -11,5 +11,3 @@ const useAuthStore = create((set) => ({
   clearAuth: () =>
     set({ user: null, token: null, isAuthenticated: false }),
 }));
-
-export default useAuthStore;
