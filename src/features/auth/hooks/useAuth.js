@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Alert } from 'react-native';
 import { loginUser, registerUser } from '../services/authService';
-import useAuthStore from '../../../store/authStore';
+import { useAuthStore } from '../../../store/authStore';
 
 const useAuth = (navigation) => {
   const [loading, setLoading] = useState(false);
@@ -21,7 +21,8 @@ const useAuth = (navigation) => {
       setLoading(true);
       const data = await loginUser(email, password);
       setAuth(data.user, data.token);
-      navigation.replace('Home');
+      Alert.alert('Login Successfull','Logged in')
+      navigation.replace('HomeScreen');
     } catch (error) {
       const message =
         error?.response?.data?.message || 'Login failed. Please try again.';
