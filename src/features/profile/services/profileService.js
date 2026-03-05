@@ -1,4 +1,7 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import apiClient from '../../../services/apiClient';
+
+const LIKES_KEY = 'yaritrip_liked_attractions';
 
 const profileService = {
   getUserProfile: async () => {
@@ -36,13 +39,37 @@ const profileService = {
       throw error?.response?.data || error;
     }
   },
-
-  getUserLikes: async () => {
+  getLikedAttractions: async () => {
     try {
-      const response = await apiClient.get('/api/user/likes');
-      return response.data;
+      const raw = await AsyncStorage.getItem(LIKES_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch {
+      return [];
+    }
+  },
+
+  getLikedIds: async () => {
+    try {
+      const raw = await AsyncStorage.getItem(LIKES_KEY);
+      const items = raw ? JSON.parse(raw) : [];
+      return new Set(items.map(item => String(item.id)));
+    } catch {
+      return new Set();
+    }
+  },
+
+  toggleLike: async (attraction) => {
+    try {
+      const raw = await AsyncStorage.getItem(LIKES_KEY);
+      const items = raw ? JSON.parse(raw) : [];
+      const isLiked = items.some(i => String(i.id) === String(attraction.id));
+      const updated = isLiked
+        ? items.filter(i => String(i.id) !== String(attraction.id))
+        : [attraction, ...items];
+      await AsyncStorage.setItem(LIKES_KEY, JSON.stringify(updated));
+      return { liked: !isLiked, items: updated };
     } catch (error) {
-      throw error?.response?.data || error;
+      throw error;
     }
   },
 };

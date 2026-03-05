@@ -2,7 +2,9 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import profileService from '../services/profileService';
 import { useAuthStore } from '../../../store/authStore';
 
-// Fake bookings data (until real API is ready)
+const LIKES_KEY = ['likedAttractions'];
+const LIKES_IDS_KEY = ['likedAttractions', 'ids'];
+
 const FAKE_BOOKINGS = [
   {
     id: '1',
@@ -39,56 +41,7 @@ const FAKE_BOOKINGS = [
   },
 ];
 
-const FAKE_LIKES = [
-  {
-    id: '4',
-    title: 'Maldives Paradise',
-    city: 'Maldives',
-    imageUrl: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800',
-    rating: 4.9,
-    reviews: 2847,
-  },
-  {
-    id: '5',
-    title: 'Santorini Dream',
-    city: 'Greece',
-    imageUrl: 'https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=800',
-    rating: 4.8,
-    reviews: 2100,
-  },
-  {
-    id: '6',
-    title: 'Tokyo Explorer',
-    city: 'Japan',
-    imageUrl: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=800',
-    rating: 4.6,
-    reviews: 1540,
-  },
-  {
-    id: '7',
-    title: 'Paris Getaway',
-    city: 'France',
-    imageUrl: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=800',
-    rating: 4.7,
-    reviews: 3200,
-  },
-  {
-    id: '8',
-    title: 'Bali Retreat',
-    city: 'Bali',
-    imageUrl: 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=800',
-    rating: 4.7,
-    reviews: 1923,
-  },
-  {
-    id: '9',
-    title: 'Dubai Luxury',
-    city: 'UAE',
-    imageUrl: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=800',
-    rating: 4.9,
-    reviews: 4100,
-  },
-];
+// ─── User Profile ─────────────────────────────────────────────────────────────
 
 export const useProfile = () => {
   return useQuery({
@@ -101,7 +54,6 @@ export const useProfile = () => {
 
 export const useUpdateProfile = () => {
   const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: profileService.updateUserProfile,
     onSuccess: () => {
@@ -113,7 +65,6 @@ export const useUpdateProfile = () => {
 export const useLogout = () => {
   const clearAuth = useAuthStore(state => state.clearAuth);
   const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: profileService.logout,
     onSuccess: () => {
@@ -121,12 +72,13 @@ export const useLogout = () => {
       queryClient.clear();
     },
     onError: () => {
-      // Even if API fails, clear local auth and redirect
       clearAuth();
       queryClient.clear();
     },
   });
 };
+
+// ─── Bookings ─────────────────────────────────────────────────────────────────
 
 export const useBookings = () => {
   return useQuery({
@@ -139,13 +91,65 @@ export const useBookings = () => {
   });
 };
 
-export const useLikes = () => {
+// ─── Likes ────────────────────────────────────────────────────────────────────
+
+export const useLikedAttractions = () => {
   return useQuery({
-    queryKey: ['userLikes'],
-    queryFn: async () => {
-      await new Promise(res => setTimeout(res, 600));
-      return FAKE_LIKES;
+    queryKey: LIKES_KEY,
+    queryFn: profileService.getLikedAttractions,
+    staleTime: 0,
+  });
+};
+
+export const useLikedIds = () => {
+  return useQuery({
+    queryKey: LIKES_IDS_KEY,
+    queryFn: profileService.getLikedIds,
+    staleTime: 0,
+  });
+};
+
+export const useToggleLike = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (attraction) => profileService.toggleLike(attraction),
+
+    onMutate: async (attraction) => {
+      await queryClient.cancelQueries({ queryKey: LIKES_KEY });
+
+      const prevItems = queryClient.getQueryData(LIKES_KEY) || [];
+      const prevIds = queryClient.getQueryData(LIKES_IDS_KEY) || new Set();
+
+      const id = String(attraction.id);
+      const isLiked = prevIds instanceof Set ? prevIds.has(id) : false;
+
+      const newItems = isLiked
+        ? prevItems.filter(i => String(i.id) !== id)
+        : [attraction, ...prevItems];
+
+      const newIds = new Set(prevIds instanceof Set ? prevIds : []);
+      isLiked ? newIds.delete(id) : newIds.add(id);
+
+      queryClient.setQueryData(LIKES_KEY, newItems);
+      queryClient.setQueryData(LIKES_IDS_KEY, newIds);
+
+      return { prevItems, prevIds };
     },
-    staleTime: 2 * 60 * 1000,
+
+    onError: (_err, _attraction, context) => {
+      if (context?.prevItems !== undefined) {
+        queryClient.setQueryData(LIKES_KEY, context.prevItems);
+      }
+      if (context?.prevIds !== undefined) {
+        queryClient.setQueryData(LIKES_IDS_KEY, context.prevIds);
+      }
+    },
+
+    onSuccess: (result) => {
+      queryClient.setQueryData(LIKES_KEY, result.items);
+      const ids = new Set(result.items.map(i => String(i.id)));
+      queryClient.setQueryData(LIKES_IDS_KEY, ids);
+    },
   });
 };

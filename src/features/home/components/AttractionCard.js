@@ -1,11 +1,36 @@
-import React from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useRef } from 'react';
+import { View, Text, Image, TouchableOpacity, StyleSheet, Animated } from 'react-native';
 import { Heart, Star, Plane, BedDouble, Bus, UtensilsCrossed, Sparkles } from 'lucide-react-native';
+import { useLikedIds, useToggleLike } from '../../profile/hooks/useProfile';
 import colors from '../../../theme/colors';
 
 const AttractionCard = ({ item, onPress }) => {
+  const { data: likedIds } = useLikedIds();
+  const { mutate: toggleLike } = useToggleLike();
+
+  const isLiked = likedIds instanceof Set ? likedIds.has(String(item.id)) : false;
+  const heartScale = useRef(new Animated.Value(1)).current;
+
+  const handleLikePress = () => {
+    Animated.sequence([
+      Animated.spring(heartScale, {
+        toValue: 1.4,
+        useNativeDriver: true,
+        speed: 50,
+        bounciness: 8,
+      }),
+      Animated.spring(heartScale, {
+        toValue: 1,
+        useNativeDriver: true,
+        speed: 20,
+        bounciness: 4,
+      }),
+    ]).start();
+    toggleLike(item);
+  };
+
   return (
-    <TouchableOpacity style={styles.card} onPress={() => onPress && onPress(item)}>
+    <TouchableOpacity style={styles.card} onPress={() => onPress && onPress(item)} activeOpacity={0.9}>
       {/* Badge */}
       <View style={styles.exclusiveBadge}>
         <Sparkles size={10} color={colors.white} />
@@ -13,8 +38,14 @@ const AttractionCard = ({ item, onPress }) => {
       </View>
 
       {/* Wishlist */}
-      <TouchableOpacity style={styles.wishlistBtn}>
-        <Heart size={20} color={colors.white} />
+      <TouchableOpacity style={styles.wishlistBtn} onPress={handleLikePress} activeOpacity={0.8}>
+        <Animated.View style={{ transform: [{ scale: heartScale }] }}>
+          <Heart
+            size={20}
+            color={isLiked ? '#EF4444' : colors.white}
+            fill={isLiked ? '#EF4444' : 'transparent'}
+          />
+        </Animated.View>
       </TouchableOpacity>
 
       {/* Image */}
@@ -91,9 +122,12 @@ const styles = StyleSheet.create({
   },
   wishlistBtn: {
     position: 'absolute',
-    top: 10,
-    right: 10,
+    top: 8,
+    right: 8,
     zIndex: 2,
+    backgroundColor: 'rgba(0,0,0,0.25)',
+    borderRadius: 20,
+    padding: 6,
   },
   image: {
     width: '100%',
