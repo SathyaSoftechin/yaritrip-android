@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import { Heart, Star, Plane, BedDouble, Bus, UtensilsCrossed, Sparkles } from 'lucide-react-native';
 import colors from '../../../theme/colors';
 
 const AttractionCard = ({ item, onPress }) => {
@@ -7,12 +8,13 @@ const AttractionCard = ({ item, onPress }) => {
     <TouchableOpacity style={styles.card} onPress={() => onPress && onPress(item)}>
       {/* Badge */}
       <View style={styles.exclusiveBadge}>
-        <Text style={styles.exclusiveText}>+ Exclusive</Text>
+        <Sparkles size={10} color={colors.white} />
+        <Text style={styles.exclusiveText}> Exclusive</Text>
       </View>
 
       {/* Wishlist */}
       <TouchableOpacity style={styles.wishlistBtn}>
-        <Text style={styles.wishlistIcon}>🤍</Text>
+        <Heart size={20} color={colors.white} />
       </TouchableOpacity>
 
       {/* Image */}
@@ -30,16 +32,16 @@ const AttractionCard = ({ item, onPress }) => {
         </Text>
 
         <View style={styles.ratingRow}>
-          <Text style={styles.star}>⭐</Text>
+          <Star size={12} color="#F59E0B" fill="#F59E0B" />
           <Text style={styles.rating}>{item.rating?.toFixed(1)}</Text>
           <Text style={styles.reviews}>({item.reviews?.toLocaleString()} reviews)</Text>
         </View>
 
         <View style={styles.amenityRow}>
-          <Text style={styles.amenityIcon}>✈️</Text>
-          <Text style={styles.amenityIcon}>🏨</Text>
-          <Text style={styles.amenityIcon}>🚌</Text>
-          <Text style={styles.amenityIcon}>🍽️</Text>
+          <Plane size={13} color={colors.textSecondary} />
+          <BedDouble size={13} color={colors.textSecondary} />
+          <Bus size={13} color={colors.textSecondary} />
+          <UtensilsCrossed size={13} color={colors.textSecondary} />
           <Text style={styles.allInclusive}>All Inclusive</Text>
         </View>
 
@@ -79,6 +81,8 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     paddingHorizontal: 8,
     paddingVertical: 3,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   exclusiveText: {
     color: colors.white,
@@ -90,9 +94,6 @@ const styles = StyleSheet.create({
     top: 10,
     right: 10,
     zIndex: 2,
-  },
-  wishlistIcon: {
-    fontSize: 18,
   },
   image: {
     width: '100%',
@@ -117,7 +118,6 @@ const styles = StyleSheet.create({
     marginTop: 4,
     gap: 3,
   },
-  star: { fontSize: 11 },
   rating: {
     fontSize: 11,
     fontWeight: '600',
@@ -131,9 +131,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginTop: 6,
-    gap: 4,
+    gap: 6,
   },
-  amenityIcon: { fontSize: 13 },
   allInclusive: {
     fontSize: 10,
     color: colors.textSecondary,

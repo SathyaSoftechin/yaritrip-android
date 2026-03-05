@@ -1,12 +1,13 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
+import { Gift, Plane, Car, BedDouble } from 'lucide-react-native';
 import colors from '../../../theme/colors';
 
 const TAB_ICONS = {
-  Packages: '🎁',
-  Flights: '✈️',
-  Cars: '🚗',
-  Hotels: '🏨',
+  Packages: Gift,
+  Flights: Plane,
+  Cars: Car,
+  Hotels: BedDouble,
 };
 
 const CategoryTabs = ({ tabs, activeTab, onTabPress }) => {
@@ -18,13 +19,19 @@ const CategoryTabs = ({ tabs, activeTab, onTabPress }) => {
     >
       {tabs.map(tab => {
         const isActive = tab === activeTab;
+        const IconComponent = TAB_ICONS[tab];
         return (
           <TouchableOpacity
             key={tab}
             style={[styles.tab, isActive && styles.activeTab]}
             onPress={() => onTabPress(tab)}
           >
-            <Text style={styles.tabIcon}>{TAB_ICONS[tab]}</Text>
+            {IconComponent && (
+              <IconComponent
+                size={16}
+                color={isActive ? colors.primary : colors.textSecondary}
+              />
+            )}
             <Text style={[styles.tabText, isActive && styles.activeTabText]}>
               {tab}
             </Text>
@@ -56,9 +63,6 @@ const styles = StyleSheet.create({
   activeTab: {
     backgroundColor: colors.primaryLight,
     borderColor: colors.primary,
-  },
-  tabIcon: {
-    fontSize: 14,
   },
   tabText: {
     fontSize: 14,

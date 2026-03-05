@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, ImageBackground, TouchableOpacity, Image, StyleSheet } from 'react-native';
+import { Bell } from 'lucide-react-native';
 import colors from '../../../theme/colors';
 
 const HERO_IMAGE = 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800';
@@ -14,7 +15,7 @@ const HeroHeader = ({ userName, avatarUrl, onNotificationPress, onAvatarPress })
       <View style={styles.overlay} />
       <View style={styles.topRow}>
         <TouchableOpacity onPress={onNotificationPress} style={styles.notifBtn}>
-          <Text style={styles.notifIcon}>🔔</Text>
+          <Bell size={22} color={colors.white} />
         </TouchableOpacity>
         <TouchableOpacity onPress={onAvatarPress}>
           {avatarUrl ? (
@@ -63,9 +64,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.2)',
     borderRadius: 20,
     padding: 8,
-  },
-  notifIcon: {
-    fontSize: 18,
   },
   avatar: {
     width: 38,

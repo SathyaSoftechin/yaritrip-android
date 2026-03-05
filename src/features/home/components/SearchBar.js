@@ -1,5 +1,7 @@
+// src/features/home/components/SearchBar.js
 import React from 'react';
 import { View, TextInput, TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { ArrowLeftRight, CalendarDays, Users, Search } from 'lucide-react-native';
 import colors from '../../../theme/colors';
 
 const SearchBar = ({ form, onChange, onSearch }) => {
@@ -13,9 +15,9 @@ const SearchBar = ({ form, onChange, onSearch }) => {
           value={form.fromCity}
           onChangeText={val => onChange('fromCity', val)}
         />
-        <View style={styles.swapIcon}>
-          <Text style={styles.swapText}>⇄</Text>
-        </View>
+        <TouchableOpacity style={styles.swapIcon}>
+          <ArrowLeftRight size={16} color={colors.primary} />
+        </TouchableOpacity>
         <TextInput
           style={styles.input}
           placeholder="To Destination"
@@ -34,7 +36,7 @@ const SearchBar = ({ form, onChange, onSearch }) => {
             value={form.when}
             onChangeText={val => onChange('when', val)}
           />
-          <Text style={styles.fieldIcon}>📅</Text>
+          <CalendarDays size={16} color={colors.textMuted} />
         </View>
         <View style={styles.inputWithIcon}>
           <TextInput
@@ -44,11 +46,12 @@ const SearchBar = ({ form, onChange, onSearch }) => {
             value={form.members}
             onChangeText={val => onChange('members', val)}
           />
-          <Text style={styles.fieldIcon}>👤</Text>
+          <Users size={16} color={colors.textMuted} />
         </View>
       </View>
 
       <TouchableOpacity style={styles.searchButton} onPress={onSearch}>
+        <Search size={18} color={colors.white} />
         <Text style={styles.searchButtonText}>Search</Text>
       </TouchableOpacity>
     </View>
@@ -92,10 +95,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  swapText: {
-    fontSize: 16,
-    color: colors.primary,
-  },
   inputWithIcon: {
     flex: 1,
     flexDirection: 'row',
@@ -111,14 +110,14 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: colors.textPrimary,
   },
-  fieldIcon: {
-    fontSize: 16,
-  },
   searchButton: {
     backgroundColor: colors.primary,
     borderRadius: 12,
     paddingVertical: 14,
     alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    gap: 8,
     marginTop: 4,
   },
   searchButtonText: {
