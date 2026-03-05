@@ -19,13 +19,15 @@ import BottomTabBar from '../components/BottomTabBar';
 import colors from '../../../theme/colors';
 import { useAuthStore } from '../../../store/authStore';
 
-const POPULAR_CITIES = ['Maldives', 'Bali', 'Santorini', 'Maui', 'Phuket'];
+
 
 const HomeScreen = ({ navigation }) => {
   const user = useAuthStore(state => state.user);
   const {
-    selectedCity,
-    setSelectedCity,
+  cities,
+  citiesLoading,
+  selectedCity,
+  setSelectedCity,
     activeTab,
     setActiveTab,
     searchForm,
@@ -47,45 +49,40 @@ const HomeScreen = ({ navigation }) => {
         showsVerticalScrollIndicator={false}
       >
         {/* Hero */}
-        <HeroHeader
-          userName={user?.name}
-          avatarUrl={user?.avatarUrl}
-        />
-
+        <HeroHeader userName={user?.name} avatarUrl={user?.avatarUrl} />
         {/* Search Card */}
         <SearchBar
           form={searchForm}
           onChange={handleSearchFormChange}
           onSearch={handleSearch}
         />
-
         {/* Category Tabs */}
         <CategoryTabs
           tabs={categoryTabs}
           activeTab={activeTab}
           onTabPress={setActiveTab}
         />
-
-        {/* Popular Cities */}
-        <SectionHeader title="Popular Destinations" />
-        <FlatList
-          horizontal
-          data={POPULAR_CITIES}
-          keyExtractor={item => item}
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.cityList}
-          renderItem={({ item }) => (
-            <CityChip
-              city={item}
-              isSelected={item === selectedCity}
-              onPress={setSelectedCity}
-            />
-          )}
-        />
-
+        {/* Popular Cities */} <SectionHeader title="Popular Destinations" />
+        {citiesLoading ? (
+          <ActivityIndicator size="small" color={colors.primary} />
+        ) : (
+          <FlatList
+            horizontal
+            data={cities}
+            keyExtractor={item => item.id}
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.cityList}
+            renderItem={({ item }) => (
+              <CityChip
+                city={item.name}
+                isSelected={item.name === selectedCity}
+                onPress={() => setSelectedCity(item.name)}
+              />
+            )}
+          />
+        )}
         {/* Attractions */}
         <SectionHeader title="Top Packages" onSeeAll={() => {}} />
-
         {attractionsLoading && (
           <ActivityIndicator
             size="large"
@@ -93,13 +90,11 @@ const HomeScreen = ({ navigation }) => {
             style={styles.loader}
           />
         )}
-
         {attractionsError && (
           <Text style={styles.errorText}>
             Failed to load packages. Please try again.
           </Text>
         )}
-
         {!attractionsLoading && !attractionsError && (
           <FlatList
             horizontal
@@ -108,20 +103,17 @@ const HomeScreen = ({ navigation }) => {
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.attractionList}
             renderItem={({ item }) => (
-              <AttractionCard
-                item={item}
-                onPress={() => {}}
-              />
+              <AttractionCard item={item} onPress={() => {}} />
             )}
             ListEmptyComponent={
-              <Text style={styles.emptyText}>No packages found for {selectedCity}.</Text>
+              <Text style={styles.emptyText}>
+                No packages found for {selectedCity}.
+              </Text>
             }
           />
         )}
-
         {/* Promo Banner */}
         <PromoBanner onPress={() => {}} />
-
         {/* Second Attractions Row */}
         <SectionHeader title="Exclusive Deals" onSeeAll={() => {}} />
         {!attractionsLoading && !attractionsError && (
@@ -136,7 +128,6 @@ const HomeScreen = ({ navigation }) => {
             )}
           />
         )}
-
         {/* Bottom padding for tab bar */}
         <View style={styles.bottomPadding} />
       </ScrollView>

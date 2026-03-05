@@ -1,26 +1,35 @@
 import React from 'react';
-import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { View, TouchableOpacity, StyleSheet, Platform } from 'react-native';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import colors from '../../../theme/colors';
 
 const TABS = [
-  { key: 'home', icon: '🏠', label: 'Home' },
-  { key: 'trips', icon: '🧳', label: 'Trips' },
-  { key: 'profile', icon: '👤', label: 'Profile' },
+  { key: 'home', icon: 'home' },
+  { key: 'trips', icon: 'briefcase-outline' },
+  { key: 'profile', icon: 'account-circle-outline' },
 ];
 
 const BottomTabBar = ({ activeTab, onTabPress }) => {
   return (
     <View style={styles.container}>
-      {TABS.map(tab => {
+      {TABS.map((tab) => {
         const isActive = tab.key === activeTab;
+
         return (
           <TouchableOpacity
             key={tab.key}
-            style={[styles.tab, isActive && styles.activeTab]}
+            activeOpacity={0.8}
             onPress={() => onTabPress(tab.key)}
+            style={[
+              styles.iconWrapper,
+              isActive ? styles.activeCircle : styles.inactiveCircle,
+            ]}
           >
-            <Text style={styles.icon}>{tab.icon}</Text>
-            {!isActive && <Text style={styles.label}>{tab.label}</Text>}
+            <MaterialCommunityIcons
+              name={tab.icon}
+              size={26}
+              color={isActive ? '#fff' : '#6e6e6e'}
+            />
           </TouchableOpacity>
         );
       })}
@@ -32,39 +41,37 @@ const styles = StyleSheet.create({
   container: {
     position: 'absolute',
     bottom: 20,
-    left: 40,
-    right: 40,
+    left: 30,
+    right: 30,
+    height: 80,
     flexDirection: 'row',
-    backgroundColor: colors.dark,
-    borderRadius: 32,
-    paddingVertical: 10,
-    paddingHorizontal: 16,
     justifyContent: 'space-around',
     alignItems: 'center',
-    elevation: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.25,
-    shadowRadius: 10,
+    backgroundColor: colors.dark || '#1a1a2e',
+    borderRadius: 40,
+    // iOS shadow
+    shadowColor: '#1e6bff',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.8,
+    shadowRadius: 20,
+    // Android shadow
+    elevation: 20,
   },
-  tab: {
-    alignItems: 'center',
+
+  iconWrapper: {
+    width: 58,
+    height: 58,
+    borderRadius: 29,
     justifyContent: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 6,
-    borderRadius: 24,
-    flexDirection: 'row',
-    gap: 6,
+    alignItems: 'center',
   },
-  activeTab: {
-    backgroundColor: colors.primary,
+
+  activeCircle: {
+    backgroundColor: colors.primary || '#1e6bff',
   },
-  icon: {
-    fontSize: 20,
-  },
-  label: {
-    color: colors.white,
-    fontSize: 12,
+
+  inactiveCircle: {
+    backgroundColor: colors.inactive || '#e5e5e5',
   },
 });
 
