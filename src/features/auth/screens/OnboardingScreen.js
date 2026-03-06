@@ -1,15 +1,13 @@
-// src/features/auth/screens/OnboardingScreen.js
 import React from 'react';
 import {
   View,
   Text,
+  Image,
   TouchableOpacity,
+  StatusBar,
   StyleSheet,
   Dimensions,
-  StatusBar,
-  Image,
 } from 'react-native';
-import { MapPin, Compass, ArrowRight } from 'lucide-react-native';
 
 const { width, height } = Dimensions.get('window');
 
@@ -18,13 +16,15 @@ const OnboardingScreen = ({ navigation }) => {
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
 
-      {/* IMAGE GRID — unchanged from original */}
+      {/* IMAGE GRID */}
       <View style={styles.imageWrapper}>
         <Image source={require('../../../assets/onb1.jpg')} style={styles.leftLarge} />
+
         <View style={styles.middleColumn}>
           <Image source={require('../../../assets/onb3.jpg')} style={styles.middleTop} />
           <Image source={require('../../../assets/onb34.jpg')} style={styles.middleBottom} />
         </View>
+
         <View style={styles.rightColumn}>
           <Image source={require('../../../assets/onb5.jpg')} style={styles.rightTop} />
           <Image source={require('../../../assets/onb3.jpg')} style={styles.rightBottom} />
@@ -33,11 +33,6 @@ const OnboardingScreen = ({ navigation }) => {
 
       {/* BOTTOM CONTENT */}
       <View style={styles.bottomCard}>
-        <View style={styles.logoRow}>
-          <MapPin size={20} color="#C9A84C" fill="#C9A84C" strokeWidth={1} />
-          <Text style={styles.logoText}>YariTrip</Text>
-        </View>
-
         <Text style={styles.title}>Curated Journeys</Text>
 
         <Text style={styles.subtitle}>
@@ -47,18 +42,22 @@ const OnboardingScreen = ({ navigation }) => {
 
         <TouchableOpacity
           style={styles.button}
-          onPress={() => navigation.navigate('Auth')}
+          onPress={() => navigation.navigate('Signup')}
           activeOpacity={0.85}
         >
-          <Compass size={18} color="#0F172A" strokeWidth={2} />
-          <Text style={styles.buttonText}>Start Exploring</Text>
-          <ArrowRight size={18} color="#0F172A" strokeWidth={2.5} />
+          <Text style={styles.buttonText}>Next</Text>
         </TouchableOpacity>
 
         <View style={styles.indicatorRow}>
           <View style={styles.activeDot} />
           <View style={styles.inactiveDot} />
         </View>
+
+        <Image
+          source={require('../../../assets/logo.jpg')}
+          style={styles.logo}
+          resizeMode="contain"
+        />
       </View>
     </View>
   );
@@ -80,84 +79,93 @@ const styles = StyleSheet.create({
     height: height * 0.47,
     borderRadius: 1,
   },
-  middleColumn: { justifyContent: 'space-between' },
-  middleTop: { width: width * 0.27, height: height * 0.18, borderRadius: 2 },
-  middleBottom: { width: width * 0.27, height: height * 0.28, borderRadius: 2 },
-  rightColumn: { justifyContent: 'space-between' },
-  rightTop: { width: width * 0.37, height: height * 0.28, borderRadius: 2 },
-  rightBottom: { width: width * 0.37, height: height * 0.18, borderRadius: 2 },
+  middleColumn: {
+    justifyContent: 'space-between',
+  },
+  middleTop: {
+    width: width * 0.27,
+    height: height * 0.18,
+    borderRadius: 2,
+  },
+  middleBottom: {
+    width: width * 0.27,
+    height: height * 0.28,
+    borderRadius: 2,
+  },
+  rightColumn: {
+    justifyContent: 'space-between',
+  },
+  rightTop: {
+    width: width * 0.37,
+    height: height * 0.28,
+    borderRadius: 2,
+  },
+  rightBottom: {
+    width: width * 0.37,
+    height: height * 0.18,
+    borderRadius: 2,
+  },
   bottomCard: {
     backgroundColor: '#ffffff',
     borderTopLeftRadius: 40,
     borderTopRightRadius: 40,
-    paddingVertical: 28,
-    paddingHorizontal: 24,
+    paddingVertical: 30,
+    paddingHorizontal: 25,
     alignItems: 'center',
-  },
-  logoRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    marginBottom: 14,
-  },
-  logoText: {
-    fontSize: 18,
-    fontWeight: '800',
-    color: '#0F172A',
-    letterSpacing: 0.3,
   },
   title: {
-    fontSize: 32,
-    fontWeight: '800',
+    fontSize: 34,
+    fontWeight: '700',
     marginBottom: 10,
-    color: '#0F172A',
-    letterSpacing: -0.5,
+    color: '#1f2937',
   },
   subtitle: {
     textAlign: 'center',
-    color: '#64748B',
-    fontSize: 14,
+    color: '#6b7280',
+    fontSize: 15,
     lineHeight: 22,
-    marginBottom: 28,
+    marginBottom: 30,
   },
   button: {
-    backgroundColor: '#C9A84C',
+    backgroundColor: '#223E86',
     width: '100%',
     paddingVertical: 16,
     borderRadius: 30,
     alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    gap: 10,
     marginBottom: 20,
-    shadowColor: '#C9A84C',
+    shadowColor: '#223E86',
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.4,
     shadowRadius: 12,
     elevation: 6,
   },
   buttonText: {
-    color: '#0F172A',
+    color: '#fff',
     fontSize: 16,
-    fontWeight: '800',
+    fontWeight: '700',
     letterSpacing: 0.3,
   },
   indicatorRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    marginBottom: 30,
   },
   activeDot: {
     width: 78,
-    height: 8,
-    backgroundColor: '#C9A84C',
-    borderRadius: 4,
+    height: 9,
+    backgroundColor: '#FFA500',
+    borderRadius: 5,
+    marginRight: 6,
   },
   inactiveDot: {
     width: 8,
     height: 8,
-    backgroundColor: '#E2E8F0',
-    borderRadius: 4,
+    backgroundColor: '#ccc',
+    borderRadius: 5,
+  },
+  logo: {
+    width: 130,
+    height: 60,
   },
 });
 

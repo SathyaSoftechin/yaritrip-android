@@ -8,25 +8,30 @@ const useAuth = (navigation) => {
   const setAuth = useAuthStore((state) => state.setAuth);
 
   const handleLogin = async (email, password) => {
-    if (!email.trim())
-      return Alert.alert('Validation Error', 'Please enter your email or mobile number.');
-    if (!password.trim())
-      return Alert.alert('Validation Error', 'Please enter your password.');
+    if (!email.trim()) {
+      Alert.alert('Validation Error', 'Please enter your email or mobile number.');
+      return;
+    }
+    if (!password.trim()) {
+      Alert.alert('Validation Error', 'Please enter your password.');
+      return;
+    }
 
     try {
       setLoading(true);
       const data = await loginUser(email, password);
       setAuth(data.user, data.token);
-      navigation.replace('Home');
+      Alert.alert('Login Successfull','Logged in')
     } catch (error) {
-      const message = error?.response?.data?.message || 'Login failed. Please try again.';
+      const message =
+        error?.response?.data?.message || 'Login failed. Please try again.';
       Alert.alert('Login Failed', message);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleRegister = async ({ name, email, mobile, password, confirmPassword, agree }) => {
+  const handleRegister = async ({ name, email, password, confirmPassword, agree }) => {
     if (!name.trim()) return Alert.alert('Validation Error', 'Please enter your name.');
     if (!email.trim()) return Alert.alert('Validation Error', 'Please enter your email.');
     if (!password.trim()) return Alert.alert('Validation Error', 'Please enter a password.');
@@ -41,7 +46,8 @@ const useAuth = (navigation) => {
       setAuth(data.user, data.token);
       navigation.replace('Home');
     } catch (error) {
-      const message = error?.response?.data?.message || 'Registration failed. Please try again.';
+      const message =
+        error?.response?.data?.message || 'Registration failed. Please try again.';
       Alert.alert('Registration Failed', message);
     } finally {
       setLoading(false);
