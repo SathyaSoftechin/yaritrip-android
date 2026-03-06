@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import {
   View,
   Text,
@@ -23,7 +23,6 @@ import ProfileMenuItem from '../components/ProfileMenuItem';
 import ProfileHeader from '../components/ProfileHeader';
 import BottomTabBar from '../../home/components/BottomTabBar';
 import { useProfile, useLogout } from '../hooks/useProfile';
-import { useState } from 'react';
 import colors from '../../../theme/colors';
 
 const FAKE_USER = {
@@ -77,7 +76,6 @@ const ProfileScreen = ({ navigation }) => {
   const [bottomTab, setBottomTab] = useState('profile');
   const displayUser = user || FAKE_USER;
 
-  // Sync bottom tab dot to 'profile' when screen is focused
   useFocusEffect(
     useCallback(() => {
       setBottomTab('profile');
@@ -112,26 +110,31 @@ const ProfileScreen = ({ navigation }) => {
           contentContainerStyle={styles.content}
           showsVerticalScrollIndicator={false}
         >
+          {/* Screen title */}
           <Text style={styles.screenTitle}>My Profile</Text>
 
+          {/* Profile header card */}
           {isLoading ? (
             <ActivityIndicator color={colors.primary} style={styles.loader} />
           ) : (
             <ProfileHeader user={displayUser} />
           )}
 
+          {/* Menu items */}
           <View style={styles.menuSection}>
-            {MENU_ITEMS.map(item => (
+            {MENU_ITEMS.map((item, index) => (
               <ProfileMenuItem
                 key={item.key}
                 label={item.label}
                 icon={item.icon}
                 iconBg={item.iconBg}
+                isActive={index === 0}
                 onPress={() => navigation.navigate(item.key)}
               />
             ))}
           </View>
 
+          {/* Logout button */}
           <TouchableOpacity
             style={[styles.logoutBtn, isLoggingOut && styles.logoutBtnDisabled]}
             onPress={handleLogout}
@@ -142,8 +145,8 @@ const ProfileScreen = ({ navigation }) => {
               <ActivityIndicator size="small" color={colors.error} />
             ) : (
               <>
-                <LogOut size={18} color={colors.error} />
                 <Text style={styles.logoutText}>Log Out</Text>
+                <LogOut size={18} color={colors.error} />
               </>
             )}
           </TouchableOpacity>
@@ -151,10 +154,7 @@ const ProfileScreen = ({ navigation }) => {
           <View style={styles.bottomPadding} />
         </ScrollView>
 
-        <BottomTabBar
-          activeTab={bottomTab}
-          navigation={navigation}
-        />
+        <BottomTabBar activeTab={bottomTab} navigation={navigation} />
       </View>
     </SafeAreaView>
   );
@@ -180,7 +180,7 @@ const styles = StyleSheet.create({
     color: colors.textPrimary,
     paddingHorizontal: 20,
     paddingTop: 16,
-    paddingBottom: 8,
+    paddingBottom: 12,
   },
   loader: {
     marginVertical: 40,
@@ -193,11 +193,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 8,
+    gap: 10,
     marginHorizontal: 16,
     marginTop: 12,
     paddingVertical: 16,
-    borderRadius: 14,
+    borderRadius: 30,
     borderWidth: 1.5,
     borderColor: colors.error,
     backgroundColor: colors.white,
