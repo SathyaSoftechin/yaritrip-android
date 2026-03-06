@@ -1,8 +1,7 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import OnboardingScreen from '../features/auth/screens/OnboardingScreen';
-import LoginScreen from '../features/auth/screens/LoginScreen';
-import SignupScreen from '../features/auth/screens/SignupScreen';
+import AuthScreen from '../features/auth/screens/AuthScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -13,8 +12,7 @@ const AuthNavigator = () => {
       screenOptions={{ headerShown: false, animation: 'slide_from_right' }}
     >
       <Stack.Screen name="Onboarding" component={OnboardingScreen} />
-      <Stack.Screen name="Login" component={LoginScreen} />
-      <Stack.Screen name="Signup" component={SignupScreen} />
+      <Stack.Screen name="Auth" component={AuthScreen} />
     </Stack.Navigator>
   );
 };

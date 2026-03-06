@@ -1,58 +1,100 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import {
   View,
   Text,
   Image,
-  TouchableOpacity,
   StatusBar,
   StyleSheet,
+  FlatList,
   Dimensions,
 } from 'react-native';
+import PrimaryButton from '../components/PrimaryButton';
+import colors from '../../../theme/colors';
 
 const { width, height } = Dimensions.get('window');
 
+// ── Slide data ────────────────────────────────────────────────────────────────
+const SLIDES = [
+  {
+    id: '1',
+    title: 'Curated Journeys',
+    subtitle:
+      'Handpicked destinations crafted to match your travel taste.\nEvery trip designed for comfort, style, and ease.',
+    images: {
+      leftLarge: require('../../../assets/onb1.jpg'),
+      middleTop: require('../../../assets/onb3.jpg'),
+      middleBottom: require('../../../assets/onb34.jpg'),
+      rightTop: require('../../../assets/onb5.jpg'),
+      rightBottom: require('../../../assets/onb3.jpg'),
+    },
+  },
+  {
+    id: '2',
+    title: 'Effortless Travel',
+    subtitle:
+      'Bookings, updates, and support in one refined experience.\nTravel confidently from start to finish.',
+    images: {
+      leftLarge: require('../../../assets/onb5.jpg'),
+      middleTop: require('../../../assets/onb1.jpg'),
+      middleBottom: require('../../../assets/onb3.jpg'),
+      rightTop: require('../../../assets/onb34.jpg'),
+      rightBottom: require('../../../assets/onb1.jpg'),
+    },
+  },
+];
+
+// ── Image mosaic ──────────────────────────────────────────────────────────────
+const ImageMosaic = ({ images }) => (
+  <View style={styles.imageWrapper}>
+    <Image source={images.leftLarge} style={styles.leftLarge} />
+    <View style={styles.middleColumn}>
+      <Image source={images.middleTop} style={styles.middleTop} />
+      <Image source={images.middleBottom} style={styles.middleBottom} />
+    </View>
+    <View style={styles.rightColumn}>
+      <Image source={images.rightTop} style={styles.rightTop} />
+      <Image source={images.rightBottom} style={styles.rightBottom} />
+    </View>
+  </View>
+);
+
+// ── Dots indicator ────────────────────────────────────────────────────────────
+const Dots = ({ current, total }) => (
+  <View style={styles.indicatorRow}>
+    {Array.from({ length: total }).map((_, i) => (
+      <View key={i} style={i === current ? styles.activeDot : styles.inactiveDot} />
+    ))}
+  </View>
+);
+
+// ── Main component ────────────────────────────────────────────────────────────
 const OnboardingScreen = ({ navigation }) => {
-  return (
-    <View style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const flatListRef = useRef(null);
 
-      {/* IMAGE GRID */}
-      <View style={styles.imageWrapper}>
-        <Image source={require('../../../assets/onb1.jpg')} style={styles.leftLarge} />
+  const handleNext = () => {
+    if (currentIndex < SLIDES.length - 1) {
+      flatListRef.current?.scrollToIndex({ index: currentIndex + 1 });
+      setCurrentIndex(currentIndex + 1);
+    } else {
+      navigation.navigate('Auth');
+    }
+  };
 
-        <View style={styles.middleColumn}>
-          <Image source={require('../../../assets/onb3.jpg')} style={styles.middleTop} />
-          <Image source={require('../../../assets/onb34.jpg')} style={styles.middleBottom} />
-        </View>
+  const onViewableItemsChanged = useRef(({ viewableItems }) => {
+    if (viewableItems.length > 0) {
+      setCurrentIndex(viewableItems[0].index);
+    }
+  }).current;
 
-        <View style={styles.rightColumn}>
-          <Image source={require('../../../assets/onb5.jpg')} style={styles.rightTop} />
-          <Image source={require('../../../assets/onb3.jpg')} style={styles.rightBottom} />
-        </View>
-      </View>
-
-      {/* BOTTOM CONTENT */}
+  const renderSlide = ({ item, index }) => (
+    <View style={styles.slide}>
+      <ImageMosaic images={item.images} />
       <View style={styles.bottomCard}>
-        <Text style={styles.title}>Curated Journeys</Text>
-
-        <Text style={styles.subtitle}>
-          Handpicked destinations crafted to match your travel taste.{'\n'}
-          Every trip designed for comfort, style, and ease.
-        </Text>
-
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigation.navigate('Signup')}
-          activeOpacity={0.85}
-        >
-          <Text style={styles.buttonText}>Next</Text>
-        </TouchableOpacity>
-
-        <View style={styles.indicatorRow}>
-          <View style={styles.activeDot} />
-          <View style={styles.inactiveDot} />
-        </View>
-
+        <Text style={styles.title}>{item.title}</Text>
+        <Text style={styles.subtitle}>{item.subtitle}</Text>
+        <PrimaryButton label="Next" onPress={handleNext} style={styles.button} />
+        <Dots current={currentIndex} total={SLIDES.length} />
         <Image
           source={require('../../../assets/logo.jpg')}
           style={styles.logo}
@@ -61,14 +103,37 @@ const OnboardingScreen = ({ navigation }) => {
       </View>
     </View>
   );
+
+  return (
+    <View style={styles.container}>
+      <StatusBar barStyle="dark-content" backgroundColor={colors.white} />
+      <FlatList
+        ref={flatListRef}
+        data={SLIDES}
+        renderItem={renderSlide}
+        keyExtractor={(item) => item.id}
+        horizontal
+        pagingEnabled
+        showsHorizontalScrollIndicator={false}
+        onViewableItemsChanged={onViewableItemsChanged}
+        viewabilityConfig={{ viewAreaCoveragePercentThreshold: 50 }}
+      />
+    </View>
+  );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: colors.white,
+  },
+  slide: {
+    width,
+    flex: 1,
+    backgroundColor: colors.white,
     justifyContent: 'space-between',
   },
+  // ── Image mosaic ──
   imageWrapper: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -79,9 +144,7 @@ const styles = StyleSheet.create({
     height: height * 0.47,
     borderRadius: 1,
   },
-  middleColumn: {
-    justifyContent: 'space-between',
-  },
+  middleColumn: { justifyContent: 'space-between' },
   middleTop: {
     width: width * 0.27,
     height: height * 0.18,
@@ -92,9 +155,7 @@ const styles = StyleSheet.create({
     height: height * 0.28,
     borderRadius: 2,
   },
-  rightColumn: {
-    justifyContent: 'space-between',
-  },
+  rightColumn: { justifyContent: 'space-between' },
   rightTop: {
     width: width * 0.37,
     height: height * 0.28,
@@ -105,8 +166,9 @@ const styles = StyleSheet.create({
     height: height * 0.18,
     borderRadius: 2,
   },
+  // ── Bottom card ──
   bottomCard: {
-    backgroundColor: '#ffffff',
+    backgroundColor: colors.white,
     borderTopLeftRadius: 40,
     borderTopRightRadius: 40,
     paddingVertical: 30,
@@ -117,50 +179,37 @@ const styles = StyleSheet.create({
     fontSize: 34,
     fontWeight: '700',
     marginBottom: 10,
-    color: '#1f2937',
+    color: colors.dark,
   },
   subtitle: {
     textAlign: 'center',
-    color: '#6b7280',
+    color: colors.textSecondary,
     fontSize: 15,
     lineHeight: 22,
     marginBottom: 30,
   },
   button: {
-    backgroundColor: '#223E86',
     width: '100%',
-    paddingVertical: 16,
-    borderRadius: 30,
-    alignItems: 'center',
-    marginBottom: 20,
-    shadowColor: '#223E86',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.4,
-    shadowRadius: 12,
-    elevation: 6,
+    marginTop: 0,
   },
-  buttonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '700',
-    letterSpacing: 0.3,
-  },
+  // ── Dots ──
   indicatorRow: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginTop: 20,
     marginBottom: 30,
+    gap: 6,
   },
   activeDot: {
     width: 78,
     height: 9,
-    backgroundColor: '#FFA500',
+    backgroundColor: colors.accent,
     borderRadius: 5,
-    marginRight: 6,
   },
   inactiveDot: {
     width: 8,
     height: 8,
-    backgroundColor: '#ccc',
+    backgroundColor: colors.border,
     borderRadius: 5,
   },
   logo: {
