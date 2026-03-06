@@ -1,6 +1,6 @@
 import React from 'react';
 import { TouchableOpacity, Text, ActivityIndicator, StyleSheet } from 'react-native';
-import colors from '../../../theme/colors';
+import colors from '../theme/colors';
 
 const PrimaryButton = ({ label, onPress, loading = false, disabled = false, style }) => {
   return (

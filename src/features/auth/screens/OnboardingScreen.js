@@ -8,7 +8,7 @@ import {
   FlatList,
   Dimensions,
 } from 'react-native';
-import PrimaryButton from '../components/PrimaryButton';
+import PrimaryButton from '../../../components/PrimaryButton';
 import colors from '../../../theme/colors';
 
 const { width, height } = Dimensions.get('window');

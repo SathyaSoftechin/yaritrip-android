@@ -17,7 +17,7 @@ import { Mail, Lock, Eye, EyeOff, User, Phone, ShieldCheck } from 'lucide-react-
 import useAuth from '../hooks/useAuth';
 import FloatingInput from '../components/FloatingInput';
 import TabToggle from '../components/TabToggle';
-import PrimaryButton from '../components/PrimaryButton';
+import PrimaryButton from '../../../components/PrimaryButton';
 import OrDivider from '../components/OrDivider';
 import SocialButtons from '../components/SocialButtons';
 import colors from '../../../theme/colors';

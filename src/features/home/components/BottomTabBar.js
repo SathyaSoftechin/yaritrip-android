@@ -1,12 +1,12 @@
-import React, { useRef } from 'react';
+import React, { useRef, useCallback } from 'react';
 import { View, TouchableOpacity, StyleSheet, Animated } from 'react-native';
 import { Home, Briefcase, CircleUserRound } from 'lucide-react-native';
 import colors from '../../../theme/colors';
 
 const TABS = [
-  { key: 'home', Icon: Home },
-  { key: 'trips', Icon: Briefcase },
-  { key: 'profile', Icon: CircleUserRound },
+  { key: 'home', Icon: Home, screen: 'Home' },
+  { key: 'trips', Icon: Briefcase, screen: 'Home' },
+  { key: 'profile', Icon: CircleUserRound, screen: 'ProfileTab' },
 ];
 
 const TabItem = ({ tabKey, Icon, isActive, onPress }) => {
@@ -31,7 +31,14 @@ const TabItem = ({ tabKey, Icon, isActive, onPress }) => {
   };
 
   return (
-    <TouchableOpacity activeOpacity={1} onPress={handlePress} style={styles.tabItem}>
+    <TouchableOpacity
+      activeOpacity={1}
+      onPress={handlePress}
+      style={styles.tabItem}
+      accessibilityRole="button"
+      accessibilityLabel={tabKey}
+      accessibilityState={{ selected: isActive }}
+    >
       <Animated.View
         style={[
           styles.iconWrapper,
@@ -50,7 +57,17 @@ const TabItem = ({ tabKey, Icon, isActive, onPress }) => {
   );
 };
 
-const BottomTabBar = ({ activeTab, onTabPress }) => {
+const BottomTabBar = ({ activeTab, navigation }) => {
+  const handleTabPress = useCallback((tabKey) => {
+    const tab = TABS.find(t => t.key === tabKey);
+    if (!tab) return;
+
+    // Don't navigate if already on this tab
+    if (tabKey === activeTab) return;
+
+    navigation.navigate(tab.screen);
+  }, [activeTab, navigation]);
+
   return (
     <View style={styles.container}>
       {TABS.map(({ key, Icon }) => (
@@ -59,7 +76,7 @@ const BottomTabBar = ({ activeTab, onTabPress }) => {
           tabKey={key}
           Icon={Icon}
           isActive={key === activeTab}
-          onPress={onTabPress}
+          onPress={handleTabPress}
         />
       ))}
     </View>
@@ -99,8 +116,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   activeCircle: {
-    backgroundColor: colors.primary || '#1e6bff',
-    shadowColor: colors.primary || '#1e6bff',
+    backgroundColor: colors.primary,
+    shadowColor: colors.primary,
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.7,
     shadowRadius: 12,
@@ -110,7 +127,7 @@ const styles = StyleSheet.create({
     width: 4,
     height: 4,
     borderRadius: 2,
-    backgroundColor: colors.primary || '#1e6bff',
+    backgroundColor: colors.primary,
   },
 });
 

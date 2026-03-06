@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   View,
   ScrollView,
@@ -7,6 +7,7 @@ import {
   Text,
   StyleSheet,
 } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { useHome } from '../hooks/useHome';
 import HeroHeader from '../components/HeroHeader';
 import SearchBar from '../components/SearchBar';
@@ -19,15 +20,15 @@ import BottomTabBar from '../components/BottomTabBar';
 import colors from '../../../theme/colors';
 import { useAuthStore } from '../../../store/authStore';
 
-
-
 const HomeScreen = ({ navigation }) => {
   const user = useAuthStore(state => state.user);
+  const [bottomTab, setBottomTab] = useState('home');
+
   const {
-  cities,
-  citiesLoading,
-  selectedCity,
-  setSelectedCity,
+    cities,
+    citiesLoading,
+    selectedCity,
+    setSelectedCity,
     activeTab,
     setActiveTab,
     searchForm,
@@ -39,7 +40,12 @@ const HomeScreen = ({ navigation }) => {
     categoryTabs,
   } = useHome();
 
-  const [bottomTab, setBottomTab] = React.useState('home');
+  // Sync active dot back to 'home' whenever this screen regains focus
+  useFocusEffect(
+    useCallback(() => {
+      setBottomTab('home');
+    }, [])
+  );
 
   return (
     <View style={styles.root}>
@@ -50,19 +56,23 @@ const HomeScreen = ({ navigation }) => {
       >
         {/* Hero */}
         <HeroHeader userName={user?.name} avatarUrl={user?.avatarUrl} />
+
         {/* Search Card */}
         <SearchBar
           form={searchForm}
           onChange={handleSearchFormChange}
           onSearch={handleSearch}
         />
+
         {/* Category Tabs */}
         <CategoryTabs
           tabs={categoryTabs}
           activeTab={activeTab}
           onTabPress={setActiveTab}
         />
-        {/* Popular Cities */} <SectionHeader title="Popular Destinations" />
+
+        {/* Popular Cities */}
+        <SectionHeader title="Popular Destinations" />
         {citiesLoading ? (
           <ActivityIndicator size="small" color={colors.primary} />
         ) : (
@@ -81,7 +91,8 @@ const HomeScreen = ({ navigation }) => {
             )}
           />
         )}
-        {/* Attractions */}
+
+        {/* Top Packages */}
         <SectionHeader title="Top Packages" onSeeAll={() => {}} />
         {attractionsLoading && (
           <ActivityIndicator
@@ -112,9 +123,11 @@ const HomeScreen = ({ navigation }) => {
             }
           />
         )}
+
         {/* Promo Banner */}
         <PromoBanner onPress={() => {}} />
-        {/* Second Attractions Row */}
+
+        {/* Exclusive Deals */}
         <SectionHeader title="Exclusive Deals" onSeeAll={() => {}} />
         {!attractionsLoading && !attractionsError && (
           <FlatList
@@ -128,11 +141,14 @@ const HomeScreen = ({ navigation }) => {
             )}
           />
         )}
-        {/* Bottom padding for tab bar */}
+
         <View style={styles.bottomPadding} />
       </ScrollView>
 
-      <BottomTabBar activeTab={bottomTab} onTabPress={setBottomTab} />
+      <BottomTabBar
+        activeTab={bottomTab}
+        navigation={navigation}
+      />
     </View>
   );
 };
