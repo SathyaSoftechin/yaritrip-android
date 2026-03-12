@@ -1,32 +1,75 @@
-// src/features/home/components/SearchBar.js
 import React from 'react';
-import { View, TextInput, TouchableOpacity, Text, StyleSheet } from 'react-native';
-import { ArrowLeftRight, CalendarDays, Users, Search } from 'lucide-react-native';
+import {
+  View,
+  TextInput,
+  Text,
+  StyleSheet,
+  Pressable,
+} from 'react-native';
+import {
+  ArrowLeftRight,
+  CalendarDays,
+  Users,
+  Search,
+  MapPin,
+  ChevronDown,
+} from 'lucide-react-native';
 import colors from '../../../theme/colors';
 
-const SearchBar = ({ form, onChange, onSearch }) => {
+const SearchBar = ({ form, onChange, onSearch, onFromCityPress, onToCityPress }) => {
   return (
     <View style={styles.container}>
+      {/* From / To row */}
       <View style={styles.row}>
-        <TextInput
-          style={styles.input}
-          placeholder="From City"
-          placeholderTextColor={colors.textMuted}
-          value={form.fromCity}
-          onChangeText={val => onChange('fromCity', val)}
-        />
-        <TouchableOpacity style={styles.swapIcon}>
+        <Pressable
+          style={({ pressed }) => [
+            styles.citySelector,
+            pressed && styles.citySelectorPressed,
+          ]}
+          onPress={onFromCityPress}
+        >
+          <MapPin size={14} color={colors.primary} />
+          <Text
+            style={[
+              styles.citySelectorText,
+              !form.fromCity && styles.citySelectorPlaceholder,
+            ]}
+            numberOfLines={1}
+          >
+            {form.fromCity || 'From City'}
+          </Text>
+          <ChevronDown size={14} color={colors.textMuted} />
+        </Pressable>
+
+        <Pressable
+          style={styles.swapIcon}
+          onPress={() => onChange('_swap')}
+        >
           <ArrowLeftRight size={16} color={colors.primary} />
-        </TouchableOpacity>
-        <TextInput
-          style={styles.input}
-          placeholder="To Destination"
-          placeholderTextColor={colors.textMuted}
-          value={form.toDestination}
-          onChangeText={val => onChange('toDestination', val)}
-        />
+        </Pressable>
+
+        <Pressable
+          style={({ pressed }) => [
+            styles.citySelector,
+            pressed && styles.citySelectorPressed,
+          ]}
+          onPress={onToCityPress}
+        >
+          <MapPin size={14} color={colors.badge} />
+          <Text
+            style={[
+              styles.citySelectorText,
+              !form.toDestination && styles.citySelectorPlaceholder,
+            ]}
+            numberOfLines={1}
+          >
+            {form.toDestination || 'To Destination'}
+          </Text>
+          <ChevronDown size={14} color={colors.textMuted} />
+        </Pressable>
       </View>
 
+      {/* When / Members row */}
       <View style={styles.row}>
         <View style={styles.inputWithIcon}>
           <TextInput
@@ -45,15 +88,23 @@ const SearchBar = ({ form, onChange, onSearch }) => {
             placeholderTextColor={colors.textMuted}
             value={form.members}
             onChangeText={val => onChange('members', val)}
+            keyboardType="numeric"
           />
           <Users size={16} color={colors.textMuted} />
         </View>
       </View>
 
-      <TouchableOpacity style={styles.searchButton} onPress={onSearch}>
+      {/* Search Button */}
+      <Pressable
+        style={({ pressed }) => [
+          styles.searchButton,
+          pressed && { opacity: 0.85 },
+        ]}
+        onPress={onSearch}
+      >
         <Search size={18} color={colors.white} />
         <Text style={styles.searchButtonText}>Search</Text>
-      </TouchableOpacity>
+      </Pressable>
     </View>
   );
 };
@@ -63,8 +114,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     borderRadius: 16,
     padding: 16,
-    marginHorizontal: 16,
-    marginTop: -32,
     elevation: 8,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
@@ -77,15 +126,29 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     gap: 8,
   },
-  input: {
+  citySelector: {
     flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
     borderWidth: 1,
     borderColor: colors.border,
     borderRadius: 10,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    fontSize: 14,
+    paddingHorizontal: 10,
+    paddingVertical: 11,
+    gap: 6,
+  },
+  citySelectorPressed: {
+    backgroundColor: colors.primaryLight,
+  },
+  citySelectorText: {
+    flex: 1,
+    fontSize: 13,
     color: colors.textPrimary,
+    fontWeight: '500',
+  },
+  citySelectorPlaceholder: {
+    color: colors.textMuted,
+    fontWeight: '400',
   },
   swapIcon: {
     backgroundColor: colors.primaryLight,
