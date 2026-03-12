@@ -17,12 +17,17 @@ import AttractionCard from '../components/AttractionCard';
 import PromoBanner from '../components/PromoBanner';
 import SectionHeader from '../components/SectionHeader';
 import BottomTabBar from '../components/BottomTabBar';
+import FloatingChatButton from '../../chatbot/components/FloatingChatButton';
 import colors from '../../../theme/colors';
 import { useAuthStore } from '../../../store/authStore';
 
 const HomeScreen = ({ navigation }) => {
   const user = useAuthStore(state => state.user);
   const [bottomTab, setBottomTab] = useState('home');
+
+  const openChat = () => {
+    navigation.navigate('Chatbot');
+  };
 
   const {
     cities,
@@ -40,7 +45,6 @@ const HomeScreen = ({ navigation }) => {
     categoryTabs,
   } = useHome();
 
-  // Sync active dot back to 'home' whenever this screen regains focus
   useFocusEffect(
     useCallback(() => {
       setBottomTab('home');
@@ -54,24 +58,20 @@ const HomeScreen = ({ navigation }) => {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* Hero */}
         <HeroHeader userName={user?.name} avatarUrl={user?.avatarUrl} />
 
-        {/* Search Card */}
         <SearchBar
           form={searchForm}
           onChange={handleSearchFormChange}
           onSearch={handleSearch}
         />
 
-        {/* Category Tabs */}
         <CategoryTabs
           tabs={categoryTabs}
           activeTab={activeTab}
           onTabPress={setActiveTab}
         />
 
-        {/* Popular Cities */}
         <SectionHeader title="Popular Destinations" />
         {citiesLoading ? (
           <ActivityIndicator size="small" color={colors.primary} />
@@ -92,7 +92,6 @@ const HomeScreen = ({ navigation }) => {
           />
         )}
 
-        {/* Top Packages */}
         <SectionHeader title="Top Packages" onSeeAll={() => {}} />
         {attractionsLoading && (
           <ActivityIndicator
@@ -116,18 +115,11 @@ const HomeScreen = ({ navigation }) => {
             renderItem={({ item }) => (
               <AttractionCard item={item} onPress={() => {}} />
             )}
-            ListEmptyComponent={
-              <Text style={styles.emptyText}>
-                No packages found for {selectedCity}.
-              </Text>
-            }
           />
         )}
 
-        {/* Promo Banner */}
         <PromoBanner onPress={() => {}} />
 
-        {/* Exclusive Deals */}
         <SectionHeader title="Exclusive Deals" onSeeAll={() => {}} />
         {!attractionsLoading && !attractionsError && (
           <FlatList
@@ -149,6 +141,9 @@ const HomeScreen = ({ navigation }) => {
         activeTab={bottomTab}
         navigation={navigation}
       />
+
+      {/* Chatbot Component */}
+      <FloatingChatButton onPress={openChat} />
     </View>
   );
 };
@@ -158,38 +153,18 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
   },
-  scroll: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingBottom: 20,
-  },
-  cityList: {
-    paddingHorizontal: 16,
-    paddingVertical: 4,
-  },
-  attractionList: {
-    paddingHorizontal: 16,
-    gap: 12,
-  },
-  loader: {
-    marginVertical: 20,
-  },
+  scroll: { flex: 1 },
+  scrollContent: { paddingBottom: 20 },
+  cityList: { paddingHorizontal: 16, paddingVertical: 4 },
+  attractionList: { paddingHorizontal: 16, gap: 12 },
+  loader: { marginVertical: 20 },
   errorText: {
     color: colors.error,
     textAlign: 'center',
     marginVertical: 16,
     fontSize: 14,
   },
-  emptyText: {
-    color: colors.textMuted,
-    fontSize: 13,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-  },
-  bottomPadding: {
-    height: 90,
-  },
+  bottomPadding: { height: 160 },
 });
 
 export default HomeScreen;
