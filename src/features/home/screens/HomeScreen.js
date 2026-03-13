@@ -17,12 +17,15 @@ import AttractionCard from '../components/AttractionCard';
 import PromoBanner from '../components/PromoBanner';
 import SectionHeader from '../components/SectionHeader';
 import BottomTabBar from '../components/BottomTabBar';
+import CityPickerModal from '../components/CityPickerModal';
 import colors from '../../../theme/colors';
 import { useAuthStore } from '../../../store/authStore';
 
 const HomeScreen = ({ navigation }) => {
   const user = useAuthStore(state => state.user);
   const [bottomTab, setBottomTab] = useState('home');
+  const [fromPickerOpen, setFromPickerOpen] = useState(false);
+  const [toPickerOpen, setToPickerOpen] = useState(false);
 
   const {
     cities,
@@ -33,19 +36,23 @@ const HomeScreen = ({ navigation }) => {
     setActiveTab,
     searchForm,
     handleSearchFormChange,
-    handleSearch,
+    handleFromCitySelect,
+    handleToCitySelect,
     attractions,
     attractionsLoading,
     attractionsError,
     categoryTabs,
   } = useHome();
 
-  // Sync active dot back to 'home' whenever this screen regains focus
   useFocusEffect(
     useCallback(() => {
       setBottomTab('home');
     }, [])
   );
+
+  const handleSearch = useCallback(() => {
+    navigation.navigate('SearchResults', { searchForm });
+  }, [navigation, searchForm]);
 
   return (
     <View style={styles.root}>
@@ -53,16 +60,21 @@ const HomeScreen = ({ navigation }) => {
         style={styles.scroll}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
+        nestedScrollEnabled
       >
         {/* Hero */}
         <HeroHeader userName={user?.name} avatarUrl={user?.avatarUrl} />
 
         {/* Search Card */}
-        <SearchBar
-          form={searchForm}
-          onChange={handleSearchFormChange}
-          onSearch={handleSearch}
-        />
+        <View style={styles.searchBarWrapper}>
+          <SearchBar
+            form={searchForm}
+            onChange={handleSearchFormChange}
+            onSearch={handleSearch}
+            onFromCityPress={() => setFromPickerOpen(true)}
+            onToCityPress={() => setToPickerOpen(true)}
+          />
+        </View>
 
         {/* Category Tabs */}
         <CategoryTabs
@@ -93,7 +105,10 @@ const HomeScreen = ({ navigation }) => {
         )}
 
         {/* Top Packages */}
-        <SectionHeader title="Top Packages" onSeeAll={() => {}} />
+        <SectionHeader
+          title="Top Packages"
+          onSeeAll={() => navigation.navigate('SearchResults', {})}
+        />
         {attractionsLoading && (
           <ActivityIndicator
             size="large"
@@ -128,7 +143,10 @@ const HomeScreen = ({ navigation }) => {
         <PromoBanner onPress={() => {}} />
 
         {/* Exclusive Deals */}
-        <SectionHeader title="Exclusive Deals" onSeeAll={() => {}} />
+        <SectionHeader
+          title="Exclusive Deals"
+          onSeeAll={() => navigation.navigate('SearchResults', {})}
+        />
         {!attractionsLoading && !attractionsError && (
           <FlatList
             horizontal
@@ -145,9 +163,22 @@ const HomeScreen = ({ navigation }) => {
         <View style={styles.bottomPadding} />
       </ScrollView>
 
-      <BottomTabBar
-        activeTab={bottomTab}
-        navigation={navigation}
+      <BottomTabBar activeTab={bottomTab} navigation={navigation} />
+
+      {/* City Picker */}
+      <CityPickerModal
+        visible={fromPickerOpen}
+        cities={cities}
+        title="From City"
+        onSelect={handleFromCitySelect}
+        onClose={() => setFromPickerOpen(false)}
+      />
+      <CityPickerModal
+        visible={toPickerOpen}
+        cities={cities}
+        title="To Destination"
+        onSelect={handleToCitySelect}
+        onClose={() => setToPickerOpen(false)}
       />
     </View>
   );
@@ -163,6 +194,10 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingBottom: 20,
+  },
+  searchBarWrapper: {
+    marginHorizontal: 16,
+    marginTop: -32,
   },
   cityList: {
     paddingHorizontal: 16,
