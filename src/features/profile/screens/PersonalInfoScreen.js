@@ -37,19 +37,20 @@ const PersonalInfoScreen = ({ navigation }) => {
     password: '',
     confirmPassword: '',
   });
+
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
 
- useEffect(() => {
-  if (user) {
-    setForm(prev => ({
-      ...prev,
-      name: user.name || '',
-      email: user.email || '',
-      mobile: user.mobile || '',
-    }));
-  }
-}, [user]);
+  useEffect(() => {
+    if (user) {
+      setForm(prev => ({
+        ...prev,
+        name: user.name || '',
+        email: user.email || '',
+        mobile: user.mobile || '',
+      }));
+    }
+  }, [user]);
 
   const handleChange = (field, value) => {
     setForm(prev => ({ ...prev, [field]: value }));
@@ -60,12 +61,14 @@ const PersonalInfoScreen = ({ navigation }) => {
       Alert.alert('Error', 'Passwords do not match.');
       return;
     }
+
     const payload = {
       name: form.name,
       email: form.email,
       mobile: form.mobile,
       ...(form.password ? { password: form.password } : {}),
     };
+
     updateProfile(payload, {
       onSuccess: () => Alert.alert('Success', 'Profile updated successfully.'),
       onError: () => Alert.alert('Error', 'Failed to update profile.'),
@@ -76,7 +79,8 @@ const PersonalInfoScreen = ({ navigation }) => {
     <SafeAreaView style={styles.safe}>
       <KeyboardAvoidingView
         style={{ flex: 1 }}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={80}
       >
         {/* Header */}
         <View style={styles.topBar}>
@@ -88,8 +92,10 @@ const PersonalInfoScreen = ({ navigation }) => {
         </View>
 
         <ScrollView
-          contentContainerStyle={styles.content}
+          contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="on-drag"
         >
           <Text style={styles.sectionTitle}>Personal Information</Text>
 
@@ -99,7 +105,6 @@ const PersonalInfoScreen = ({ navigation }) => {
             <ProfileHeader user={displayUser} showEdit onAvatarPress={() => {}} />
           )}
 
-          {/* Form */}
           <View style={styles.form}>
             <View style={styles.fieldGroup}>
               <Text style={styles.label}>Name</Text>
@@ -109,6 +114,7 @@ const PersonalInfoScreen = ({ navigation }) => {
                 onChangeText={v => handleChange('name', v)}
                 placeholder="Full Name"
                 placeholderTextColor={colors.textMuted}
+                returnKeyType="next"
               />
             </View>
 
@@ -122,6 +128,7 @@ const PersonalInfoScreen = ({ navigation }) => {
                 placeholderTextColor={colors.textMuted}
                 keyboardType="email-address"
                 autoCapitalize="none"
+                returnKeyType="next"
               />
             </View>
 
@@ -134,6 +141,7 @@ const PersonalInfoScreen = ({ navigation }) => {
                 placeholder="Mobile number"
                 placeholderTextColor={colors.textMuted}
                 keyboardType="phone-pad"
+                returnKeyType="next"
               />
             </View>
 
@@ -147,12 +155,12 @@ const PersonalInfoScreen = ({ navigation }) => {
                   placeholder="New password"
                   placeholderTextColor={colors.textMuted}
                   secureTextEntry={!showPassword}
+                  returnKeyType="next"
                 />
                 <TouchableOpacity onPress={() => setShowPassword(p => !p)}>
                   {showPassword
                     ? <Eye size={18} color={colors.textMuted} />
-                    : <EyeOff size={18} color={colors.textMuted} />
-                  }
+                    : <EyeOff size={18} color={colors.textMuted} />}
                 </TouchableOpacity>
               </View>
             </View>
@@ -167,12 +175,12 @@ const PersonalInfoScreen = ({ navigation }) => {
                   placeholder="Confirm new password"
                   placeholderTextColor={colors.textMuted}
                   secureTextEntry={!showConfirm}
+                  returnKeyType="done"
                 />
                 <TouchableOpacity onPress={() => setShowConfirm(p => !p)}>
                   {showConfirm
                     ? <Eye size={18} color={colors.textMuted} />
-                    : <EyeOff size={18} color={colors.textMuted} />
-                  }
+                    : <EyeOff size={18} color={colors.textMuted} />}
                 </TouchableOpacity>
               </View>
             </View>
@@ -185,8 +193,7 @@ const PersonalInfoScreen = ({ navigation }) => {
             >
               {isPending
                 ? <ActivityIndicator color={colors.white} />
-                : <Text style={styles.saveBtnText}>Save</Text>
-              }
+                : <Text style={styles.saveBtnText}>Save</Text>}
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -197,6 +204,7 @@ const PersonalInfoScreen = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.background },
+
   topBar: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -207,20 +215,25 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
   },
+
   backBtn: {
     width: 40,
     height: 40,
     alignItems: 'center',
     justifyContent: 'center',
   },
+
   topTitle: {
     fontSize: 17,
     fontWeight: '700',
     color: colors.textPrimary,
   },
-  content: {
-    paddingBottom: 40,
+
+  scrollContent: {
+    flexGrow: 1,
+    paddingBottom: 260,
   },
+
   sectionTitle: {
     fontSize: 20,
     fontWeight: '700',
@@ -229,20 +242,25 @@ const styles = StyleSheet.create({
     paddingTop: 20,
     paddingBottom: 4,
   },
+
   loader: { marginVertical: 40 },
+
   form: {
     paddingHorizontal: 20,
     paddingTop: 8,
   },
+
   fieldGroup: {
     marginBottom: 16,
   },
+
   label: {
     fontSize: 13,
     fontWeight: '600',
     color: colors.textSecondary,
     marginBottom: 6,
   },
+
   input: {
     borderWidth: 1,
     borderColor: colors.border,
@@ -253,6 +271,7 @@ const styles = StyleSheet.create({
     color: colors.textPrimary,
     backgroundColor: colors.white,
   },
+
   passwordWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -262,22 +281,27 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     backgroundColor: colors.white,
   },
+
   passwordInput: {
     flex: 1,
     paddingVertical: 12,
     fontSize: 15,
     color: colors.textPrimary,
   },
+
   saveBtn: {
     backgroundColor: colors.primary,
     borderRadius: 14,
     paddingVertical: 16,
     alignItems: 'center',
     marginTop: 8,
+    marginBottom: 40,
   },
+
   saveBtnDisabled: {
     opacity: 0.6,
   },
+
   saveBtnText: {
     color: colors.white,
     fontSize: 16,
