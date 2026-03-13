@@ -120,9 +120,10 @@ const AuthScreen = ({ navigation }) => {
             {/* ── SIGNUP PANEL ── */}
             <ScrollView
               style={styles.panel}
+              contentContainerStyle={{ flexGrow: 1, paddingBottom: 120 }}
               showsVerticalScrollIndicator={false}
               keyboardShouldPersistTaps="handled"
-              nestedScrollEnabled
+              keyboardDismissMode="on-drag"
             >
               <FloatingInput
                 label="Full Name"
@@ -231,10 +232,11 @@ const AuthScreen = ({ navigation }) => {
 
                                     {/* ── LOGIN PANEL ── */}
             <ScrollView
-              style={styles.panel}
-              showsVerticalScrollIndicator={false}
-              keyboardShouldPersistTaps="handled"
-              nestedScrollEnabled
+                style={styles.panel}
+                contentContainerStyle={{ flexGrow: 1, paddingBottom: 120 }}
+                showsVerticalScrollIndicator={false}
+                keyboardShouldPersistTaps="handled"
+                keyboardDismissMode="on-drag"
             >
               <FloatingInput
                 label="E-mail ID / Mobile number"
