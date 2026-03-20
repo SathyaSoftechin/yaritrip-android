@@ -61,11 +61,16 @@ const HomeScreen = ({ navigation }) => {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
         nestedScrollEnabled
+        // Required so the members dropdown can visually overflow
+        // the ScrollView's clipping boundary on Android
+        overScrollMode="never"
       >
         {/* Hero */}
         <HeroHeader userName={user?.name} avatarUrl={user?.avatarUrl} />
 
-        {/* Search Card */}
+        {/* Search Card
+            overflow: 'visible' + zIndex ensure the members dropdown
+            floats above CategoryTabs and city chips rendered below */}
         <View style={styles.searchBarWrapper}>
           <SearchBar
             form={searchForm}
@@ -165,7 +170,7 @@ const HomeScreen = ({ navigation }) => {
 
       <BottomTabBar activeTab={bottomTab} navigation={navigation} />
 
-      {/* City Picker */}
+      {/* City Pickers */}
       <CityPickerModal
         visible={fromPickerOpen}
         cities={cities}
@@ -198,6 +203,10 @@ const styles = StyleSheet.create({
   searchBarWrapper: {
     marginHorizontal: 16,
     marginTop: -32,
+    // Critical: allow the members dropdown to overflow this wrapper
+    // and appear above the components rendered below in the ScrollView
+    overflow: 'visible',
+    zIndex: 10,
   },
   cityList: {
     paddingHorizontal: 16,
