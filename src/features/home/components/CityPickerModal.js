@@ -71,7 +71,7 @@ const CityPickerModal = ({ visible, cities, onSelect, onClose, title }) => {
           {/* City List */}
           <FlatList
             data={filtered}
-            keyExtractor={item => item.id?.toString()}
+            keyExtractor={(item, index) => item.id != null ? String(item.id) : `city-${index}`}
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
             renderItem={({ item }) => {

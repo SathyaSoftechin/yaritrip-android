@@ -26,6 +26,10 @@ const HomeScreen = ({ navigation }) => {
   const [bottomTab, setBottomTab] = useState('home');
   const [fromPickerOpen, setFromPickerOpen] = useState(false);
   const [toPickerOpen, setToPickerOpen] = useState(false);
+  const safeKey = (prefix) => (item, index) =>
+  item?.id ? `${prefix}-${item.id}` : `${prefix}-fallback-${index}`;
+
+
 
   const {
     cities,
@@ -54,6 +58,11 @@ const HomeScreen = ({ navigation }) => {
     navigation.navigate('SearchResults', { searchForm });
   }, [navigation, searchForm]);
 
+  // ── Fix: navigate to PackageDetail on card press ──────────────────────────
+  const handlePackagePress = useCallback((item) => {
+    navigation.navigate('PackageDetail', { packageId: item.id });
+  }, [navigation]);
+
   return (
     <View style={styles.root}>
       <ScrollView
@@ -61,16 +70,12 @@ const HomeScreen = ({ navigation }) => {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
         nestedScrollEnabled
-        // Required so the members dropdown can visually overflow
-        // the ScrollView's clipping boundary on Android
         overScrollMode="never"
       >
         {/* Hero */}
         <HeroHeader userName={user?.name} avatarUrl={user?.avatarUrl} />
 
-        {/* Search Card
-            overflow: 'visible' + zIndex ensure the members dropdown
-            floats above CategoryTabs and city chips rendered below */}
+        {/* Search Card */}
         <View style={styles.searchBarWrapper}>
           <SearchBar
             form={searchForm}
@@ -96,7 +101,8 @@ const HomeScreen = ({ navigation }) => {
           <FlatList
             horizontal
             data={cities}
-            keyExtractor={item => item.id}
+            // Fix: use city.id as key, never rely on index alone
+            keyExtractor={safeKey("city")}
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.cityList}
             renderItem={({ item }) => (
@@ -130,11 +136,13 @@ const HomeScreen = ({ navigation }) => {
           <FlatList
             horizontal
             data={attractions}
-            keyExtractor={item => item.id?.toString()}
+            // Fix: stable, unique key — never reuse index
+            keyExtractor={safeKey("pkg")}
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.attractionList}
             renderItem={({ item }) => (
-              <AttractionCard item={item} onPress={() => {}} />
+              // Fix: pass handlePackagePress so tapping opens PackageDetail
+              <AttractionCard item={item} onPress={handlePackagePress} />
             )}
             ListEmptyComponent={
               <Text style={styles.emptyText}>
@@ -156,11 +164,12 @@ const HomeScreen = ({ navigation }) => {
           <FlatList
             horizontal
             data={attractions}
-            keyExtractor={item => `deal-${item.id}`}
+            // Fix: different prefix so keys don't clash with Top Packages list
+            keyExtractor={safeKey("deal")}
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.attractionList}
             renderItem={({ item }) => (
-              <AttractionCard item={item} onPress={() => {}} />
+              <AttractionCard item={item} onPress={handlePackagePress} />
             )}
           />
         )}
@@ -203,8 +212,6 @@ const styles = StyleSheet.create({
   searchBarWrapper: {
     marginHorizontal: 16,
     marginTop: -32,
-    // Critical: allow the members dropdown to overflow this wrapper
-    // and appear above the components rendered below in the ScrollView
     overflow: 'visible',
     zIndex: 10,
   },
