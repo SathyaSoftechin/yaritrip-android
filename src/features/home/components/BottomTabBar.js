@@ -5,7 +5,7 @@ import colors from '../../../theme/colors';
 
 const TABS = [
   { key: 'home', Icon: Home, screen: 'Home' },
-  { key: 'trips', Icon: Briefcase, screen: 'Home' },
+  { key: 'trips', Icon: Briefcase, screen: 'SearchResults' },
   { key: 'profile', Icon: CircleUserRound, screen: 'ProfileTab' },
 ];
 

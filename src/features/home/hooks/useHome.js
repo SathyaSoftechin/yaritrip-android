@@ -20,19 +20,18 @@ export const useHome = () => {
     members: '',
   });
 
-  // ─── Fetch cities ─────────────────────────────────────────────────────────
+  // ─── Fetch cities ─────────────────────────────────────────
   const { data: cities = [], isLoading: citiesLoading } = useQuery({
     queryKey: ['cities'],
     queryFn: cityService.getCities,
     staleTime: 10 * 60 * 1000,
   });
 
-  // Auto select first city for the Popular Destinations chip list
-  const activeCity = selectedCity || cities?.[0]?.name;
+  const activeCity = selectedCity || cities?.[0]?.name || null;
 
-  // ─── Fetch attractions ────────────────────────────────────────────────────
+  // ─── Fetch attractions ────────────────────────────────────
   const {
-    data: attractions = [],
+    data: rawAttractions = [],
     isLoading: attractionsLoading,
     error: attractionsError,
   } = useQuery({
@@ -41,11 +40,14 @@ export const useHome = () => {
     enabled: !!activeCity,
   });
 
-  // ─── Search form handlers ─────────────────────────────────────────────────
 
-  // Generic field change (for When, Members plain TextInputs)
+  const attractions = rawAttractions.map((item, index) => ({
+    ...item,
+    id: item?.id ?? `fallback-${index}`,
+  }));
+
+
   const handleSearchFormChange = (field, value) => {
-    // Special case: swap button sends '_swap'
     if (field === '_swap') {
       setSearchForm(prev => ({
         ...prev,
@@ -61,21 +63,18 @@ export const useHome = () => {
     setSearchForm(prev => ({ ...prev, [field]: value }));
   };
 
-  // Called when user picks a city from the From City picker
   const handleFromCitySelect = (city) => {
     setSearchForm(prev => ({
       ...prev,
       fromCity: city.name,
       fromCityId: city.id,
       fromCode: city.code || city.name,
-      // Reset destination if same as newly picked from-city
       ...(prev.toDestination === city.name
         ? { toDestination: '', toCityId: null, toCode: '' }
         : {}),
     }));
   };
 
-  // Called when user picks a city from the To City picker
   const handleToCitySelect = (city) => {
     setSearchForm(prev => ({
       ...prev,
@@ -86,24 +85,20 @@ export const useHome = () => {
   };
 
   return {
-    // City chip list
     cities,
     citiesLoading,
     selectedCity: activeCity,
     setSelectedCity,
 
-    // Category tabs
     activeTab,
     setActiveTab,
     categoryTabs: CATEGORY_TABS,
 
-    // Search form
     searchForm,
     handleSearchFormChange,
     handleFromCitySelect,
     handleToCitySelect,
 
-    // Attractions / packages
     attractions,
     attractionsLoading,
     attractionsError,

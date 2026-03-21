@@ -35,6 +35,7 @@ const SearchResultsScreen = ({ navigation, route }) => {
     handleToCitySelect,
     handleSearch,
     handleFilterChange,
+    // handlePackagePress already calls navigation.navigate('PackageDetail', { packageId: pkg.id })
     handlePackagePress,
   } = useSearch(navigation, initialForm);
 
@@ -81,10 +82,12 @@ const SearchResultsScreen = ({ navigation, route }) => {
       {!packagesLoading && !packagesError && hasSearched && (
         <FlatList
           data={packages}
-          keyExtractor={item => item.id?.toString()}
+          // Fix: stable unique key for each package row
+          keyExtractor={item => `result-${String(item.id)}`}
           contentContainerStyle={styles.list}
           showsVerticalScrollIndicator={false}
           renderItem={({ item }) => (
+            // handlePackagePress → navigation.navigate('PackageDetail', { packageId: item.id })
             <PackageCard item={item} onPress={handlePackagePress} />
           )}
           ListEmptyComponent={
