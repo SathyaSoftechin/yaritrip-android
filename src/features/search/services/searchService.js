@@ -18,3 +18,8 @@ export const searchPackages = async ({ fromCode, toCode, date, rooms, guests }) 
   });
   return response.data;
 };
+
+export const fetchAllPackages = async () => {
+  const response = await apiClient.get('/api/packages');
+  return response.data;
+};

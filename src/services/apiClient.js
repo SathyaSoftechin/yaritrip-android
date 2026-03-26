@@ -2,7 +2,7 @@ import axios from 'axios';
 import { useAuthStore } from '../store/authStore';
 
 const apiClient = axios.create({
-  baseURL: 'http://192.168.1.7:8085',
+  baseURL: 'http://192.168.1.10:8085',
   headers: {
     'Content-Type': 'application/json',
   },

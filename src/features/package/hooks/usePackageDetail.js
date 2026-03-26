@@ -6,7 +6,7 @@ import {
 } from '../services/packageService';
 
 // API serves images as relative paths — prefix them with the base URL
-const BASE_URL = 'http://192.168.1.7:8085';
+const BASE_URL = 'http://192.168.1.10:8085';
 
 const resolveImage = (url) => {
   if (!url) return null;

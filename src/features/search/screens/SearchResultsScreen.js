@@ -30,14 +30,17 @@ const SearchResultsScreen = ({ navigation, route }) => {
     packagesError,
     hasSearched,
     filters,
+    noParamsMode,
     handleFormChange,
     handleFromCitySelect,
     handleToCitySelect,
     handleSearch,
     handleFilterChange,
-    // handlePackagePress already calls navigation.navigate('PackageDetail', { packageId: pkg.id })
     handlePackagePress,
   } = useSearch(navigation, initialForm);
+
+  // In no-params mode the list is auto-loaded; show it as soon as data arrives
+  const shouldShowList = hasSearched || (noParamsMode && !packagesLoading);
 
   return (
     <SafeAreaView style={styles.root}>
@@ -46,7 +49,9 @@ const SearchResultsScreen = ({ navigation, route }) => {
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
           <ArrowLeft size={22} color={colors.textPrimary} />
         </TouchableOpacity>
-        <Text style={styles.screenTitle}>All Packages</Text>
+        <Text style={styles.screenTitle}>
+          {noParamsMode ? 'All Packages' : 'Search Results'}
+        </Text>
         <TouchableOpacity
           style={styles.filterBtn}
           onPress={() => setFilterVisible(true)}
@@ -55,7 +60,7 @@ const SearchResultsScreen = ({ navigation, route }) => {
         </TouchableOpacity>
       </View>
 
-      {/* Search Card */}
+      {/* Search Card — always shown so the user can refine */}
       <SearchBar
         form={form}
         onChange={handleFormChange}
@@ -64,7 +69,7 @@ const SearchResultsScreen = ({ navigation, route }) => {
         onToCityPress={() => setToPickerOpen(true)}
       />
 
-      {/* Results */}
+      {/* Loading */}
       {packagesLoading && (
         <ActivityIndicator
           size="large"
@@ -73,21 +78,21 @@ const SearchResultsScreen = ({ navigation, route }) => {
         />
       )}
 
-      {packagesError && (
+      {/* Error */}
+      {!packagesLoading && packagesError && (
         <Text style={styles.errorText}>
           Failed to load packages. Please try again.
         </Text>
       )}
 
-      {!packagesLoading && !packagesError && hasSearched && (
+      {/* Results list */}
+      {!packagesLoading && !packagesError && shouldShowList && (
         <FlatList
           data={packages}
-          // Fix: stable unique key for each package row
           keyExtractor={item => `result-${String(item.id)}`}
           contentContainerStyle={styles.list}
           showsVerticalScrollIndicator={false}
           renderItem={({ item }) => (
-            // handlePackagePress → navigation.navigate('PackageDetail', { packageId: item.id })
             <PackageCard item={item} onPress={handlePackagePress} />
           )}
           ListEmptyComponent={
@@ -98,7 +103,8 @@ const SearchResultsScreen = ({ navigation, route }) => {
         />
       )}
 
-      {!hasSearched && !packagesLoading && (
+      {/* Hint — only when no params and not yet loaded */}
+      {!noParamsMode && !hasSearched && !packagesLoading && (
         <Text style={styles.hintText}>
           Fill in your details above and tap Search.
         </Text>
