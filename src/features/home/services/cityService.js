@@ -18,16 +18,16 @@ export const CITY_IMAGES = {
 };
 
 const HARDCODED_CITIES = [
+  { name: 'Dubai', code: 'DXB', country: 'UAE' },
+  { name: 'Singapore', code: 'SIN', country: 'Singapore' },
   { name: 'Hyderabad', code: 'HYD', country: 'India' },
   { name: 'Delhi', code: 'DEL', country: 'India' },
   { name: 'Kerala', code: 'KD', country: 'India' },
   { name: 'Kashmir', code: 'SXR', country: 'India' },
   { name: 'Andaman', code: 'IXZ', country: 'India' },
   { name: 'Mumbai', code: 'BOM', country: 'India' },
-  { name: 'Dubai', code: 'DXB', country: 'UAE' },
   { name: 'Kuala Lumpur', code: 'KUL', country: 'Malaysia' },
   { name: 'Vietnam', code: 'VN', country: 'Vietnam' },
-  { name: 'Singapore', code: 'SIN', country: 'Singapore' },
   { name: 'Bali', code: 'DPS', country: 'Indonesia' },
   { name: 'Bangkok', code: 'PG', country: 'Thailand' },
   { name: 'Male', code: 'MLE', country: 'Maldives' },

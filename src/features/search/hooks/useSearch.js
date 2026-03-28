@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { fetchCities, fetchDestinations, searchPackages } from '../services/searchService';
+import { fetchCities, fetchDestinations, searchPackages, fetchAllPackages } from '../services/searchService';
 
 const DEFAULT_FORM = {
   fromCity: '',
@@ -13,35 +13,40 @@ const DEFAULT_FORM = {
   members: '',
 };
 
+// Returns true when the form has enough data to trigger a search
+const isFormComplete = (form) =>
+  !!form.fromCode && !!form.toCode && !!form.when && !!form.members;
+
 export const useSearch = (navigation, initialForm = {}) => {
   const [form, setForm] = useState({ ...DEFAULT_FORM, ...initialForm });
   const [hasSearched, setHasSearched] = useState(false);
   const [filters, setFilters] = useState({
-    budgetRange: null,       // e.g. { min: 10000, max: 15000 }
-    hotelCategory: [],       // e.g. [2, 3, 4, 5]
-    cities: [],              // selected city names
-    themes: [],
-    packageType: null,       // 'Customization' | 'Group Packages'
-    premiumPackages: false,
-    buyNowPayLater: false,
+    budgetRange: null,     // { min, max } — matches pkg.price
+    durationRange: null,   // { min, max } — matches pkg.totalDays
+    category: null,        // 'DOMESTIC' | 'INTERNATIONAL' — matches pkg.category
   });
 
-  // Auto-fire search if navigated in with a fully populated form
+  // True when the screen was opened without a complete search form
+  const noParamsMode = !isFormComplete({ ...DEFAULT_FORM, ...initialForm });
+
+  // ─── All packages (no-params mode) ───────────────────────────────────────────
+  const {
+    data: allPackages = [],
+    isLoading: allPackagesLoading,
+    error: allPackagesError,
+  } = useQuery({
+    queryKey: ['allPackages'],
+    queryFn: fetchAllPackages,
+    enabled: noParamsMode,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  // Mark hasSearched once the all-packages query has resolved
   useEffect(() => {
-    const { fromCode, toCode, when, members } = form;
-    if (fromCode && toCode && when && members) {
-      const [rooms, guests] = members.split(',').map(Number);
-      triggerSearch({
-        fromCode,
-        toCode,
-        date: when,
-        rooms: rooms || 1,
-        guests: guests || 1,
-      });
+    if (noParamsMode && allPackages.length > 0) {
+      setHasSearched(true);
     }
-    // Only runs once on mount
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [noParamsMode, allPackages]);
 
   // ─── Cities (From City dropdown) ────────────────────────────────────────────
   const {
@@ -65,16 +70,38 @@ export const useSearch = (navigation, initialForm = {}) => {
     staleTime: 5 * 60 * 1000,
   });
 
-  // ─── Search packages ─────────────────────────────────────────────────────────
+  // ─── Search packages (param mode) ────────────────────────────────────────────
   const {
-    data: packages = [],
-    isPending: packagesLoading,
-    error: packagesError,
+    data: searchedPackages = [],
+    isPending: searchLoading,
+    error: searchError,
     mutate: triggerSearch,
   } = useMutation({
     mutationFn: searchPackages,
     onSuccess: () => setHasSearched(true),
   });
+
+  // Auto-fire search if navigated in with a fully populated form
+  useEffect(() => {
+    if (!noParamsMode) {
+      const { fromCode, toCode, when, members } = form;
+      const [rooms, guests] = members.split(',').map(Number);
+      triggerSearch({
+        fromCode,
+        toCode,
+        date: when,
+        rooms: rooms || 1,
+        guests: guests || 1,
+      });
+    }
+    // Only runs once on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // ─── Resolve active package list & loading/error states ──────────────────────
+  const rawPackages = noParamsMode ? allPackages : searchedPackages;
+  const packagesLoading = noParamsMode ? allPackagesLoading : searchLoading;
+  const packagesError = noParamsMode ? allPackagesError : searchError;
 
   // ─── Handlers ────────────────────────────────────────────────────────────────
   const handleFormChange = useCallback((field, value) => {
@@ -137,14 +164,26 @@ export const useSearch = (navigation, initialForm = {}) => {
   }, [navigation]);
 
   // ─── Client-side filter application ──────────────────────────────────────────
-  const filteredPackages = packages.filter(pkg => {
+  const filteredPackages = rawPackages.filter(pkg => {
+    // Budget filter → pkg.price
     if (filters.budgetRange) {
       const { min, max } = filters.budgetRange;
-      if (pkg.price < min || pkg.price > max) return false;
+      const price = pkg.price ?? 0;
+      if (price < min || price > max) return false;
     }
-    if (filters.hotelCategory.length > 0) {
-      if (!filters.hotelCategory.includes(pkg.hotelCategory)) return false;
+
+    // Duration filter → pkg.totalDays
+    if (filters.durationRange) {
+      const { min, max } = filters.durationRange;
+      const days = pkg.totalDays ?? 0;
+      if (days < min || days > max) return false;
     }
+
+    // Category filter → pkg.category ('DOMESTIC' | 'INTERNATIONAL')
+    if (filters.category) {
+      if ((pkg.category ?? '').toUpperCase() !== filters.category) return false;
+    }
+
     return true;
   });
 
@@ -160,6 +199,7 @@ export const useSearch = (navigation, initialForm = {}) => {
     packagesError,
     hasSearched,
     filters,
+    noParamsMode,
     handleFormChange,
     handleFromCitySelect,
     handleToCitySelect,
