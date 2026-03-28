@@ -1,3 +1,5 @@
+// src/features/auth/components/SocialButtons.js
+
 import React from 'react';
 import { View, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import colors from '../../../theme/colors';
@@ -5,17 +7,25 @@ import colors from '../../../theme/colors';
 const GOOGLE_LOGO = 'https://www.google.com/favicon.ico';
 const FACEBOOK_LOGO = 'https://www.facebook.com/images/fb_icon_325x325.png';
 
-const SocialButtons = () => (
+const SocialButtons = ({ onGooglePress }) => (
   <View style={styles.socialRow}>
-    <TouchableOpacity style={styles.socialBtn} activeOpacity={0.7}>
+
+    <TouchableOpacity
+      style={styles.socialBtn}
+      activeOpacity={0.7}
+      onPress={onGooglePress}
+    >
       <Image source={{ uri: GOOGLE_LOGO }} style={styles.socialLogo} />
     </TouchableOpacity>
+
     <TouchableOpacity style={styles.socialBtn} activeOpacity={0.7}>
       <Image source={{ uri: FACEBOOK_LOGO }} style={styles.socialLogo} />
     </TouchableOpacity>
+
     <TouchableOpacity style={styles.socialBtn} activeOpacity={0.7}>
       <Image source={require('../../../assets/apple_logo.png')} style={styles.socialLogo} />
     </TouchableOpacity>
+
   </View>
 );
 
