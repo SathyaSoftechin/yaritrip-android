@@ -1,4 +1,7 @@
-import React, { useState, useRef } from 'react';
+// src/features/auth/screens/AuthScreen.js
+// UI only — no business logic, no API calls.
+
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -24,7 +27,7 @@ import colors from '../../../theme/colors';
 
 const { width } = Dimensions.get('window');
 
-const AuthScreen = ({ navigation }) => {
+const AuthScreen = ({ navigation, route }) => {
   const [activeTab, setActiveTab] = useState('signup');
   const slideAnim = useRef(new Animated.Value(0)).current;
 
@@ -51,9 +54,10 @@ const AuthScreen = ({ navigation }) => {
   const [signupPasswordFocus, setSignupPasswordFocus] = useState(false);
   const [confirmPasswordFocus, setConfirmPasswordFocus] = useState(false);
 
-  const { loading, handleLogin, handleRegister } = useAuth(navigation);
+  const { loading, handleLogin, handleRegister, handleGoogleLogin } = useAuth(navigation);
 
-  const switchTab = (tab) => {
+  // ── Tab animation ─────────────────────────────────────────────────────────
+  const switchTab = useCallback((tab) => {
     if (tab === activeTab) return;
     Animated.spring(slideAnim, {
       toValue: tab === 'login' ? 1 : 0,
@@ -62,7 +66,14 @@ const AuthScreen = ({ navigation }) => {
       friction: 12,
     }).start();
     setActiveTab(tab);
-  };
+  }, [activeTab, slideAnim]);
+
+  useEffect(() => {
+    if (route?.params?.switchToLogin) {
+      switchTab('login');
+      navigation.setParams({ switchToLogin: false });
+    }
+  }, [route?.params?.switchToLogin, navigation, switchTab]);
 
   const panelTranslateX = slideAnim.interpolate({
     inputRange: [0, 1],
@@ -115,12 +126,10 @@ const AuthScreen = ({ navigation }) => {
           <Animated.View
             style={[styles.slidingRow, { transform: [{ translateX: panelTranslateX }] }]}
           >
-
-
             {/* ── SIGNUP PANEL ── */}
             <ScrollView
               style={styles.panel}
-              contentContainerStyle={{ flexGrow: 1, paddingBottom: 120 }}
+              contentContainerStyle={styles.panelContent}
               showsVerticalScrollIndicator={false}
               keyboardShouldPersistTaps="handled"
               keyboardDismissMode="on-drag"
@@ -144,6 +153,7 @@ const AuthScreen = ({ navigation }) => {
                 keyboardType="email-address"
                 IconComponent={Mail}
               />
+              {/* Mobile — required by backend RegisterRequest DTO */}
               <FloatingInput
                 label="Mobile Number"
                 value={mobile}
@@ -214,6 +224,7 @@ const AuthScreen = ({ navigation }) => {
                   handleRegister({
                     name,
                     email: signupEmail,
+                    mobile,
                     password: signupPassword,
                     confirmPassword,
                     agree,
@@ -222,21 +233,24 @@ const AuthScreen = ({ navigation }) => {
                 loading={loading}
               />
               <OrDivider />
-              <SocialButtons />
+              {/* Pass Google handler so SocialButtons can call it */}
+              <SocialButtons onGooglePress={handleGoogleLogin} />
               <Text style={styles.bottomText}>
                 Already have an account?{' '}
-                <Text style={styles.linkText} onPress={() => switchTab('login')}>Log In</Text>
+                <Text style={styles.linkText} onPress={() => switchTab('login')}>
+                  Log In
+                </Text>
               </Text>
               <View style={styles.panelBottom} />
             </ScrollView>
 
-                                    {/* ── LOGIN PANEL ── */}
+            {/* ── LOGIN PANEL ── */}
             <ScrollView
-                style={styles.panel}
-                contentContainerStyle={{ flexGrow: 1, paddingBottom: 120 }}
-                showsVerticalScrollIndicator={false}
-                keyboardShouldPersistTaps="handled"
-                keyboardDismissMode="on-drag"
+              style={styles.panel}
+              contentContainerStyle={styles.panelContent}
+              showsVerticalScrollIndicator={false}
+              keyboardShouldPersistTaps="handled"
+              keyboardDismissMode="on-drag"
             >
               <FloatingInput
                 label="E-mail ID / Mobile number"
@@ -291,18 +305,15 @@ const AuthScreen = ({ navigation }) => {
                 loading={loading}
               />
               <OrDivider />
-              <SocialButtons />
+              <SocialButtons onGooglePress={handleGoogleLogin} />
               <Text style={styles.bottomText}>
                 Don't have an account?{' '}
-                <Text style={styles.linkText} onPress={() => switchTab('signup')}>Register Now</Text>
+                <Text style={styles.linkText} onPress={() => switchTab('signup')}>
+                  Register Now
+                </Text>
               </Text>
               <View style={styles.panelBottom} />
             </ScrollView>
-
-
-
-
-
           </Animated.View>
         </View>
       </KeyboardAvoidingView>
@@ -349,9 +360,13 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   panel: {
-    width: width,
+    width,
     paddingHorizontal: 28,
-    paddingTop: 18
+    paddingTop: 18,
+  },
+  panelContent: {
+    flexGrow: 1,
+    paddingBottom: 120,
   },
   panelBottom: { height: 48 },
   eyeBtn: { padding: 4 },
