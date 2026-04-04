@@ -1,5 +1,3 @@
-// src/features/auth/components/SocialButtons.js
-
 import React from 'react';
 import { View, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import colors from '../../../theme/colors';

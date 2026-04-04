@@ -1,6 +1,3 @@
-// src/features/auth/screens/AuthScreen.js
-// UI only — no business logic, no API calls.
-
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import {
   View,
@@ -153,7 +150,6 @@ const AuthScreen = ({ navigation, route }) => {
                 keyboardType="email-address"
                 IconComponent={Mail}
               />
-              {/* Mobile — required by backend RegisterRequest DTO */}
               <FloatingInput
                 label="Mobile Number"
                 value={mobile}
