@@ -1,5 +1,3 @@
-// src/features/auth/hooks/useAuth.js
-
 import { useState, useCallback } from 'react';
 import { Alert } from 'react-native';
 import InAppBrowser from 'react-native-inappbrowser-reborn';
@@ -7,11 +5,8 @@ import { loginUser, registerUser } from '../services/authService';
 import { useAuthStore } from '../../../store/authStore';
 
 // ── Config ────────────────────────────────────────────────────────────────────
-// Change this IP to match your backend during development.
 const BACKEND_URL = 'http://192.168.1.16:8085';
 
-// Must match EXACTLY what backend sends in response.sendRedirect(...)
-// Backend: response.sendRedirect("http://localhost:5173/oauth-success?token=" + token)
 const OAUTH_REDIRECT_PREFIX = 'http://192.168.1.16:5173/oauth-success';
 
 // ── Error parser ──────────────────────────────────────────────────────────────
@@ -102,8 +97,7 @@ const useAuth = (navigation) => {
 
   // ── Google OAuth via InAppBrowser ──────────────────────────────────────────
   // Opens OAuth in an in-app browser. InAppBrowser watches for the redirect to
-  // OAUTH_REDIRECT_PREFIX and returns that URL — token is extracted from it.
-  // Backend needs zero changes — localhost:5173 redirect works perfectly here.
+  // OAUTH_REDIRECT_PREFIX and returns that URL — token is extracted from it
   const handleGoogleLogin = useCallback(async () => {
     const oauthUrl = `${BACKEND_URL}/oauth2/authorization/google`;
 

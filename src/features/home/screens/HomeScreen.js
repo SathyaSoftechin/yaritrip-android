@@ -18,6 +18,7 @@ import PromoBanner from '../components/PromoBanner';
 import SectionHeader from '../components/SectionHeader';
 import BottomTabBar from '../components/BottomTabBar';
 import CityPickerModal from '../components/CityPickerModal';
+import StaysSection from '../components/StaysSection';
 import colors from '../../../theme/colors';
 import { useAuthStore } from '../../../store/authStore';
 
@@ -26,10 +27,9 @@ const HomeScreen = ({ navigation }) => {
   const [bottomTab, setBottomTab] = useState('home');
   const [fromPickerOpen, setFromPickerOpen] = useState(false);
   const [toPickerOpen, setToPickerOpen] = useState(false);
+
   const safeKey = (prefix) => (item, index) =>
-  item?.id ? `${prefix}-${item.id}` : `${prefix}-fallback-${index}`;
-
-
+    item?.id ? `${prefix}-${item.id}` : `${prefix}-fallback-${index}`;
 
   const {
     cities,
@@ -58,7 +58,6 @@ const HomeScreen = ({ navigation }) => {
     navigation.navigate('SearchResults', { searchForm });
   }, [navigation, searchForm]);
 
-  // ── Fix: navigate to PackageDetail on card press ──────────────────────────
   const handlePackagePress = useCallback((item) => {
     navigation.navigate('PackageDetail', { packageId: item.id });
   }, [navigation]);
@@ -101,8 +100,7 @@ const HomeScreen = ({ navigation }) => {
           <FlatList
             horizontal
             data={cities}
-            // Fix: use city.id as key, never rely on index alone
-            keyExtractor={safeKey("city")}
+            keyExtractor={safeKey('city')}
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.cityList}
             renderItem={({ item }) => (
@@ -136,12 +134,10 @@ const HomeScreen = ({ navigation }) => {
           <FlatList
             horizontal
             data={attractions}
-            // Fix: stable, unique key — never reuse index
-            keyExtractor={safeKey("pkg")}
+            keyExtractor={safeKey('pkg')}
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.attractionList}
             renderItem={({ item }) => (
-              // Fix: pass handlePackagePress so tapping opens PackageDetail
               <AttractionCard item={item} onPress={handlePackagePress} />
             )}
             ListEmptyComponent={
@@ -155,24 +151,13 @@ const HomeScreen = ({ navigation }) => {
         {/* Promo Banner */}
         <PromoBanner onPress={() => {}} />
 
-        {/* Exclusive Deals */}
-        <SectionHeader
-          title="Exclusive Deals"
-          onSeeAll={() => navigation.navigate('SearchResults', {})}
+        {/* Stays */}
+        <StaysSection
+          onStayPress={(stay) =>
+            navigation.navigate('StayDetail', { stayId: stay.id })
+          }
+
         />
-        {!attractionsLoading && !attractionsError && (
-          <FlatList
-            horizontal
-            data={attractions}
-            // Fix: different prefix so keys don't clash with Top Packages list
-            keyExtractor={safeKey("deal")}
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.attractionList}
-            renderItem={({ item }) => (
-              <AttractionCard item={item} onPress={handlePackagePress} />
-            )}
-          />
-        )}
 
         <View style={styles.bottomPadding} />
       </ScrollView>
