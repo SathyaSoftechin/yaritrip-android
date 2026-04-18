@@ -6,18 +6,31 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from 'react-native';
-import { Star, MapPin, Calendar, Users, Clock } from 'lucide-react-native';
+import { MapPin, Calendar, Users, Clock } from 'lucide-react-native';
 import colors from '../../../theme/colors';
+import { BASE_URL } from '../../../services/apiClient';
 
-const PLACEHOLDER_IMAGE = 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80';
+const PLACEHOLDER_IMAGE =
+  'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80';
+
+const resolveImage = (url) => {
+  if (!url) return null;
+  if (url.startsWith('http')) return url;
+  return `${BASE_URL}${url}`;
+};
 
 const PackageCard = ({ item, onPress }) => {
   const title = item.toCity?.name || item.title || 'Unknown Destination';
   const fromCity = item.fromCity?.name || item.location || '';
+
   const nights = item.totalDays ? item.totalDays - 1 : item.nights || 0;
   const days = item.totalDays || (item.nights ? item.nights + 1 : 0);
-  const imageUri = item.bannerImageUrl || item.image || item.bannerImage || PLACEHOLDER_IMAGE;
-  const rating = item.rating ?? null;
+
+  const imageUri =
+    resolveImage(item.images?.[0]) ||
+    resolveImage(item.image) ||
+    PLACEHOLDER_IMAGE;
+
   const category = item.category || null;
   const departureDate = item.departureDate || null;
 
@@ -29,10 +42,14 @@ const PackageCard = ({ item, onPress }) => {
     >
       {/* Category Badge */}
       {category && (
-        <View style={[
-          styles.badge,
-          category === 'INTERNATIONAL' ? styles.badgeInternational : styles.badgeDomestic,
-        ]}>
+        <View
+          style={[
+            styles.badge,
+            category === 'INTERNATIONAL'
+              ? styles.badgeInternational
+              : styles.badgeDomestic,
+          ]}
+        >
           <Text style={styles.badgeText}>{category}</Text>
         </View>
       )}
@@ -47,7 +64,9 @@ const PackageCard = ({ item, onPress }) => {
       {/* Info */}
       <View style={styles.info}>
         {/* Title */}
-        <Text style={styles.title} numberOfLines={1}>{title}</Text>
+        <Text style={styles.title} numberOfLines={1}>
+          {title}
+        </Text>
 
         {/* From → To */}
         {fromCity ? (
@@ -59,14 +78,17 @@ const PackageCard = ({ item, onPress }) => {
           </View>
         ) : null}
 
-        {/* Duration + Date row */}
+        {/* Duration + Date */}
         <View style={styles.metaRow}>
           {days > 0 && (
             <View style={styles.metaChip}>
               <Clock size={11} color={colors.textSecondary} />
-              <Text style={styles.metaText}>{nights}N / {days}D</Text>
+              <Text style={styles.metaText}>
+                {nights}N / {days}D
+              </Text>
             </View>
           )}
+
           {departureDate && (
             <View style={styles.metaChip}>
               <Calendar size={11} color={colors.textSecondary} />
@@ -79,6 +101,7 @@ const PackageCard = ({ item, onPress }) => {
               </Text>
             </View>
           )}
+
           {item.totalRooms && item.guestsPerRoom ? (
             <View style={styles.metaChip}>
               <Users size={11} color={colors.textSecondary} />
@@ -89,19 +112,14 @@ const PackageCard = ({ item, onPress }) => {
           ) : null}
         </View>
 
-        {/* Rating row — show only when available */}
-        {rating !== null && rating !== undefined ? (
-          <View style={styles.ratingRow}>
-            <Star size={12} color="#F59E0B" fill="#F59E0B" />
-            <Text style={styles.rating}>{rating.toFixed(1)}</Text>
-          </View>
-        ) : null}
-
         {/* Price */}
         <View style={styles.priceRow}>
           <Text style={styles.startingFrom}>Starting from</Text>
           <Text style={styles.price}>
-            ₹{item.price?.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
+            ₹
+            {item.price?.toLocaleString('en-IN', {
+              maximumFractionDigits: 0,
+            })}
           </Text>
           <Text style={styles.perPerson}>per person</Text>
         </View>
@@ -141,7 +159,6 @@ const styles = StyleSheet.create({
     color: colors.white,
     fontSize: 10,
     fontWeight: '700',
-    letterSpacing: 0.4,
   },
   image: {
     width: '100%',
@@ -184,17 +201,6 @@ const styles = StyleSheet.create({
   metaText: {
     fontSize: 11,
     color: colors.textSecondary,
-  },
-  ratingRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 6,
-    gap: 4,
-  },
-  rating: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: colors.textPrimary,
   },
   priceRow: {
     marginTop: 10,

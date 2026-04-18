@@ -1,8 +1,10 @@
 import axios from 'axios';
 import { useAuthStore } from '../store/authStore';
 
+export const BASE_URL = 'http://192.168.88.32:8082';
+
 const apiClient = axios.create({
-  baseURL: 'http://192.168.1.11:8085',
+  baseURL: BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -10,7 +12,7 @@ const apiClient = axios.create({
 });
 
 apiClient.interceptors.request.use(
-  config => {
+  (config) => {
     const token = useAuthStore.getState().token;
 
     if (token) {
@@ -19,7 +21,7 @@ apiClient.interceptors.request.use(
 
     return config;
   },
-  error => Promise.reject(error)
+  (error) => Promise.reject(error)
 );
 
 export default apiClient;

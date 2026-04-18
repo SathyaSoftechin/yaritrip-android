@@ -7,7 +7,6 @@ import {
   ActivityIndicator,
   StyleSheet,
 } from 'react-native';
-import { Mountain, Palmtree, Sunrise, Sunset } from 'lucide-react-native';
 import { useStays } from '../hooks/useStays';
 import StayCard from './StayCard';
 import SectionHeader from './SectionHeader';

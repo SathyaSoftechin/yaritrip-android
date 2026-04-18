@@ -4,10 +4,9 @@ import {
   fetchPackageById,
   calculatePackagePrice,
 } from '../services/packageService';
+import { BASE_URL } from '../../../services/apiClient';
 
-// API serves images as relative paths — prefix them with the base URL
-const BASE_URL = 'http://192.168.1.10:8085';
-
+// ── Resolve image URLs ─────────────────────────────────────────
 const resolveImage = (url) => {
   if (!url) return null;
   if (url.startsWith('http')) return url;
@@ -17,7 +16,7 @@ const resolveImage = (url) => {
 const usePackageDetail = (packageId) => {
   const [travellersCount, setTravellersCount] = useState(2);
 
-  // ── Fetch package details ────────────────────────────────────────────────
+  // ── Fetch package ────────────────────────────────────────────
   const {
     data: packageData,
     isLoading,
@@ -31,20 +30,21 @@ const usePackageDetail = (packageId) => {
     staleTime: 5 * 60 * 1000,
   });
 
-  // ── Price calculation ────────────────────────────────────────────────────
+  // ── Price calculation ────────────────────────────────────────
   const {
     mutate: recalculatePrice,
     data: priceData,
     isPending: isPriceLoading,
   } = useMutation({
-    mutationFn: (activityIds) => calculatePackagePrice(packageId, activityIds),
+    mutationFn: (activityIds) =>
+      calculatePackagePrice(packageId, activityIds),
   });
 
   const handleRecalculate = useCallback(
     (activityIds = []) => {
       if (packageId) recalculatePrice(activityIds);
     },
-    [packageId, recalculatePrice],
+    [packageId, recalculatePrice]
   );
 
   const incrementTravellers = useCallback(() => {
@@ -55,12 +55,12 @@ const usePackageDetail = (packageId) => {
     setTravellersCount((prev) => Math.max(prev - 1, 1));
   }, []);
 
-  // ── Resolve all image URLs from the API response ─────────────────────────
+  // ── Images ───────────────────────────────────────────────────
   const bannerImages = packageData?.images?.length
     ? packageData.images.map(resolveImage).filter(Boolean)
     : [];
 
-  // ── Build days array from package nights ─────────────────────────────────
+  // ── Days ─────────────────────────────────────────────────────
   const days = packageData
     ? Array.from({ length: packageData.nights || 3 }, (_, i) => ({
         dayNumber: i + 1,
@@ -77,7 +77,9 @@ const usePackageDetail = (packageId) => {
         },
         transport: {
           name: 'Private Transport',
-          description: `Comfortable private transport from airport to hotel in ${packageData.location || 'destination'}.`,
+          description: `Comfortable private transport from airport to hotel in ${
+            packageData.location || 'destination'
+          }.`,
           imageUrl: null,
         },
         flight:
@@ -102,7 +104,6 @@ const usePackageDetail = (packageId) => {
     ? Math.round(packageData.price * 1.15)
     : 0;
 
-  // overview is null in current API — fall back to a generated description
   const overview =
     packageData?.overview ||
     (packageData
