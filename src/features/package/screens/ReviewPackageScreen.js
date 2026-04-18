@@ -8,54 +8,65 @@ import {
   ActivityIndicator,
   Alert,
   TextInput,
+  Image,
 } from 'react-native';
 import {
   ArrowLeft,
-  Luggage,
-  ShieldPlus,
-  Clock,
-  Briefcase,
-  HeartPulse,
   Check,
   Plus,
-  User,
+  Minus,
 } from 'lucide-react-native';
 import colors from '../../../theme/colors';
 import useReviewPackage from '../hooks/useReviewPackage';
 
-const SW = 2.5; // Bold stroke matching SearchResultsScreen icons
+const SW = 2.5;
 
-// ─── Traveller Form ───────────────────────────────────────────────────────────
+// ─── Traveller Card ───────────────────────────────────────────────────────────
 
-const TravellerForm = ({ traveller, index, onChange }) => (
+const TravellerForm = ({ traveller, index, onChange, onRemove, canRemove }) => (
   <View style={styles.travellerCard}>
-    <View style={styles.travellerHeader}>
-      <View style={styles.travellerIconBox}>
-        <User size={20} color={colors.primary} strokeWidth={SW} />
-      </View>
-      <View>
-        <Text style={styles.travellerTitle}>Traveler {index + 1}</Text>
-        <Text style={styles.travellerSub}>
-          {traveller.type === 'ADULT' ? 'ADULT - ABOVE 12 YEARS' : 'CHILD'}
-        </Text>
-      </View>
-    </View>
-    <View style={styles.travellerFields}>
-      <TextInput
-        style={styles.fieldLarge}
-        placeholder="Full Name (as per ID)"
-        placeholderTextColor={colors.textMuted}
-        value={traveller.name}
-        onChangeText={(v) => onChange(index, 'name', v)}
+    <View style={styles.travellerRow}>
+      {/* Illustration */}
+      <Image
+        source={require('../../../assets/traveller-illustration.png')}
+        style={styles.travellerIllustration}
+        resizeMode="contain"
       />
-      <TextInput
-        style={styles.fieldSmall}
-        placeholder="Age"
-        placeholderTextColor={colors.textMuted}
-        keyboardType="numeric"
-        value={traveller.age}
-        onChangeText={(v) => onChange(index, 'age', v)}
-      />
+
+      {/* Info + Fields */}
+      <View style={styles.travellerRight}>
+        <View style={styles.travellerTitleRow}>
+          <View>
+            <Text style={styles.travellerTitle}>Traveler {index + 1}</Text>
+            <Text style={styles.travellerSub}>
+              {traveller.type === 'ADULT' ? 'ADULT - ABOVE 12 YEARS' : 'CHILD'}
+            </Text>
+          </View>
+          {canRemove && (
+            <TouchableOpacity style={styles.removeBtn} onPress={() => onRemove(index)}>
+              <Minus size={13} color={colors.error} strokeWidth={SW} />
+            </TouchableOpacity>
+          )}
+        </View>
+
+        <View style={styles.travellerFields}>
+          <TextInput
+            style={styles.fieldLarge}
+            placeholder="Full Name (as per ID)"
+            placeholderTextColor={colors.textMuted}
+            value={traveller.name}
+            onChangeText={(v) => onChange(index, 'name', v)}
+          />
+          <TextInput
+            style={styles.fieldSmall}
+            placeholder="Age"
+            placeholderTextColor={colors.textMuted}
+            keyboardType="numeric"
+            value={traveller.age}
+            onChangeText={(v) => onChange(index, 'age', v)}
+          />
+        </View>
+      </View>
     </View>
   </View>
 );
@@ -63,56 +74,70 @@ const TravellerForm = ({ traveller, index, onChange }) => (
 // ─── Step 1: Traveller Details ────────────────────────────────────────────────
 
 const TravellerDetailsStep = ({
-  travellers, updateTraveller, addTraveller,
+  travellers, updateTraveller, addTraveller, removeTraveller,
   bookingForSelf, setBookingForSelf, onNext,
 }) => (
   <ScrollView contentContainerStyle={styles.stepContent} showsVerticalScrollIndicator={false}>
-    <View style={styles.sectionCard}>
-      <View style={styles.sectionCardHeader}>
-        <View style={styles.sectionIconBox}>
-          <Luggage size={22} color={colors.primary} strokeWidth={SW} />
-        </View>
-        <View>
-          <Text style={styles.sectionCardTitle}>Traveller Details</Text>
-          <Text style={styles.sectionCardSub}>
-            {travellers.length} Travellers • {Math.ceil(travellers.length / 2)} Rooms
-          </Text>
-        </View>
+    {/* Section Header */}
+    <View style={styles.sectionHeaderCard}>
+      <Image
+        source={require('../../../assets/traveller-place.png')}
+        style={styles.sectionHeaderImage}
+        resizeMode="contain"
+      />
+      <View>
+        <Text style={styles.sectionCardTitle}>Traveller Details</Text>
+        <Text style={styles.sectionCardSub}>
+          {travellers.length} Travellers • {Math.ceil(travellers.length / 2)} Rooms
+        </Text>
       </View>
+    </View>
 
-      {/* Radio row */}
-      <View style={styles.radioRow}>
-        {[
-          { label: "I'm Booking For Myself", val: true },
-          { label: "I'm Booking For Someone else", val: false },
-        ].map(({ label, val }) => (
-          <TouchableOpacity
-            key={label}
-            style={styles.radioOpt}
-            onPress={() => setBookingForSelf(val)}
-          >
-            <View style={[styles.radioCircle, bookingForSelf === val && styles.radioCircleActive]}>
-              {bookingForSelf === val && <View style={styles.radioDot} />}
-            </View>
-            <Text style={styles.radioLabel}>{label}</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-
-      {travellers.map((t, i) => (
-        <TravellerForm key={t.id} traveller={t} index={i} onChange={updateTraveller} />
+    {/* Radio */}
+    <View style={styles.radioRow}>
+      {[
+        { label: "I'm Booking For Myself", val: true },
+        { label: "I'm Booking For Someone else", val: false },
+      ].map(({ label, val }) => (
+        <TouchableOpacity
+          key={label}
+          style={styles.radioOpt}
+          onPress={() => setBookingForSelf(val)}
+        >
+          <View style={[styles.radioCircle, bookingForSelf === val && styles.radioCircleActive]}>
+            {bookingForSelf === val && <View style={styles.radioDot} />}
+          </View>
+          <Text style={styles.radioLabel}>{label}</Text>
+        </TouchableOpacity>
       ))}
+    </View>
 
-      <View style={styles.addBtnRow}>
-        <TouchableOpacity style={styles.addBtn} onPress={() => addTraveller('ADULT')}>
-          <Plus size={13} color={colors.textPrimary} strokeWidth={SW} />
-          <Text style={styles.addBtnText}> Add Adult</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.addBtn} onPress={() => addTraveller('CHILD')}>
-          <Plus size={13} color={colors.textPrimary} strokeWidth={SW} />
-          <Text style={styles.addBtnText}> Add Child</Text>
-        </TouchableOpacity>
-      </View>
+    {/* Traveller Cards */}
+    {travellers.map((t, i) => (
+      <TravellerForm
+        key={t.id}
+        traveller={t}
+        index={i}
+        onChange={updateTraveller}
+        onRemove={removeTraveller}
+        canRemove={travellers.length > 1}
+      />
+    ))}
+
+    {/* Add Buttons */}
+    <View style={styles.addBtnRow}>
+      <TouchableOpacity style={styles.addBtn} onPress={() => addTraveller('ADULT')}>
+        <View style={styles.addBtnIcon}>
+          <Plus size={11} color={colors.textPrimary} strokeWidth={SW} />
+        </View>
+        <Text style={styles.addBtnText}>Add Adult</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.addBtn} onPress={() => addTraveller('CHILD')}>
+        <View style={styles.addBtnIcon}>
+          <Plus size={11} color={colors.textPrimary} strokeWidth={SW} />
+        </View>
+        <Text style={styles.addBtnText}>Add Child</Text>
+      </TouchableOpacity>
     </View>
 
     <TouchableOpacity style={styles.primaryBtn} onPress={onNext}>
@@ -128,54 +153,58 @@ const AddOnsStep = ({
   travellers, insuranceSelected, setInsuranceSelected, insuranceCost, onNext,
 }) => (
   <ScrollView contentContainerStyle={styles.stepContent} showsVerticalScrollIndicator={false}>
-    <View style={styles.sectionCard}>
-      <View style={styles.sectionCardHeader}>
-        <View style={styles.sectionIconBox}>
-          <ShieldPlus size={22} color={colors.primary} strokeWidth={SW} />
-        </View>
-        <View>
-          <Text style={styles.sectionCardTitle}>Package Add-on's</Text>
-          <Text style={styles.sectionCardSub}>Protect your trip with add-ons</Text>
+    {/* Section Header */}
+    <View style={styles.sectionHeaderCard}>
+      <Image
+        source={require('../../../assets/insurance-square.png')}
+        style={styles.sectionHeaderImage}
+        resizeMode="contain"
+      />
+      <View>
+        <Text style={styles.sectionCardTitle}>Package Add-on's</Text>
+        <Text style={styles.sectionCardSub}>Protect your trip with add-ons</Text>
+      </View>
+    </View>
+
+    {/* Insurance Card */}
+    <TouchableOpacity
+      style={[styles.insuranceCard, insuranceSelected && styles.insuranceCardActive]}
+      onPress={() => setInsuranceSelected(!insuranceSelected)}
+      activeOpacity={0.8}
+    >
+      <View style={styles.insuranceHeaderRow}>
+        <Image
+          source={require('../../../assets/insurance-illustration.png')}
+          style={styles.insuranceIllustration}
+          resizeMode="contain"
+        />
+        <View style={styles.insuranceHeaderText}>
+          <Text style={styles.insuranceTitle}>Travel + Medical Insurance</Text>
+          <Text style={styles.insuranceSub}>Comprehensive coverage for a worry-free journey</Text>
         </View>
       </View>
 
-      <TouchableOpacity
-        style={[styles.insuranceCard, insuranceSelected && styles.insuranceCardActive]}
-        onPress={() => setInsuranceSelected(!insuranceSelected)}
-        activeOpacity={0.8}
-      >
-        <View style={styles.insuranceHeaderRow}>
-          <View style={styles.insuranceIconBox}>
-            <ShieldPlus size={24} color={colors.primary} strokeWidth={SW} />
-          </View>
-          <View style={styles.insuranceHeaderText}>
-            <Text style={styles.insuranceTitle}>Travel + Medical Insurance</Text>
-            <Text style={styles.insuranceSub}>Comprehensive coverage for a worry-free journey</Text>
-          </View>
-        </View>
+      <View style={styles.insuranceDivider} />
 
-        <View style={styles.insuranceDivider} />
+      <View style={styles.benefitRow}>
+        <Text style={styles.benefitIcon}>🕐</Text>
+        <Text style={styles.benefitText}>Trip Delay Coverage Up to ₹5,000</Text>
+      </View>
+      <View style={styles.benefitRow}>
+        <Text style={styles.benefitIcon}>🧳</Text>
+        <Text style={styles.benefitText}>Lost Baggage Up to ₹25,000</Text>
+      </View>
+      <View style={styles.benefitRow}>
+        <Text style={styles.benefitIcon}>🛡️</Text>
+        <Text style={styles.benefitText}>Medical Emergency</Text>
+      </View>
 
-        <View style={styles.benefitRow}>
-          <Clock size={16} color={colors.textSecondary} strokeWidth={SW} />
-          <Text style={styles.benefitText}>  Trip Delay Coverage Up to ₹5,000</Text>
-        </View>
-        <View style={styles.benefitRow}>
-          <Briefcase size={16} color={colors.textSecondary} strokeWidth={SW} />
-          <Text style={styles.benefitText}>  Lost Baggage Up to ₹25,000</Text>
-        </View>
-        <View style={styles.benefitRow}>
-          <HeartPulse size={16} color={colors.textSecondary} strokeWidth={SW} />
-          <Text style={styles.benefitText}>  Medical Emergency</Text>
-        </View>
-
-        <View style={styles.insuranceTotalPill}>
-          <Text style={styles.insuranceTotalText}>
-            Total: ₹{insuranceCost.toLocaleString('en-IN')} for {travellers.length} travellers
-          </Text>
-        </View>
-      </TouchableOpacity>
-    </View>
+      <View style={styles.insuranceTotalPill}>
+        <Text style={styles.insuranceTotalText}>
+          Total: ₹{insuranceCost.toLocaleString('en-IN')} for {travellers.length} travellers
+        </Text>
+      </View>
+    </TouchableOpacity>
 
     <TouchableOpacity style={styles.primaryBtn} onPress={onNext}>
       <Text style={styles.primaryBtnText}>Next</Text>
@@ -192,7 +221,7 @@ const PaymentSummaryStep = ({
   onPay, isBookingLoading,
 }) => (
   <ScrollView contentContainerStyle={styles.stepContent} showsVerticalScrollIndicator={false}>
-    {/* Grand total — light blue card matching design */}
+    {/* Grand Total */}
     <View style={styles.grandTotalCard}>
       <View style={styles.grandTotalTopRow}>
         <Text style={styles.grandTotalLabel}>GRAND TOTAL - {travellers.length}Adults</Text>
@@ -209,7 +238,7 @@ const PaymentSummaryStep = ({
       </View>
     </View>
 
-    {/* Fare breakdown */}
+    {/* Fare Breakdown */}
     <View style={styles.fareCard}>
       <Text style={styles.fareTitle}>Fare Break</Text>
 
@@ -229,6 +258,7 @@ const PaymentSummaryStep = ({
           - ₹{Math.round(couponDiscount).toLocaleString('en-IN')}
         </Text>
       </View>
+
       <View style={styles.fareRow}>
         <Text style={styles.fareLabel}>Fees & Taxes</Text>
         <Text style={styles.fareValue}>+ ₹{Math.round(gst).toLocaleString('en-IN')}</Text>
@@ -237,6 +267,8 @@ const PaymentSummaryStep = ({
         <Text style={styles.fareSubLabel}>GST 5.0%</Text>
         <Text style={styles.fareSubValue}>₹{Math.round(gst).toLocaleString('en-IN')}</Text>
       </View>
+
+      <View style={styles.fareDivider} />
 
       <Text style={styles.importantTitle}>Important Information</Text>
       <TouchableOpacity
@@ -278,18 +310,18 @@ const PaymentSummaryStep = ({
 // ─── Main Screen ──────────────────────────────────────────────────────────────
 
 const ReviewPackageScreen = ({ navigation, route }) => {
-  const { packageId, basePrice = 0, travellersCount = 2 } = route.params || {};
+  const { packageId, bookingId, basePrice = 0, travellersCount = 2 } = route.params || {};
 
   const {
     currentStep, currentStepName,
     goNext, goBack,
     bookingForSelf, setBookingForSelf,
-    travellers, updateTraveller, addTraveller,
+    travellers, updateTraveller, addTraveller, removeTraveller,
     insuranceSelected, setInsuranceSelected, insuranceCost,
     termsAccepted, setTermsAccepted,
     couponDiscount, gst, grandTotal,
     submitBooking, isBookingLoading, isBookingSuccess,
-  } = useReviewPackage({ packageId, basePrice, travellersCount });
+  } = useReviewPackage({ packageId, bookingId, basePrice, travellersCount });
 
   React.useEffect(() => {
     if (isBookingSuccess) {
@@ -308,7 +340,7 @@ const ReviewPackageScreen = ({ navigation, route }) => {
 
   return (
     <View style={styles.container}>
-      {/* Header — matches design: back arrow + centered title */}
+      {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity
           onPress={handleBack}
@@ -320,7 +352,7 @@ const ReviewPackageScreen = ({ navigation, route }) => {
         <View style={{ width: 32 }} />
       </View>
 
-      {/* Step dots */}
+      {/* Step Indicator */}
       <View style={styles.stepIndicator}>
         {[0, 1, 2].map((s) => (
           <React.Fragment key={s}>
@@ -337,6 +369,7 @@ const ReviewPackageScreen = ({ navigation, route }) => {
           travellers={travellers}
           updateTraveller={updateTraveller}
           addTraveller={addTraveller}
+          removeTraveller={removeTraveller}
           bookingForSelf={bookingForSelf}
           setBookingForSelf={setBookingForSelf}
           onNext={goNext}
@@ -402,35 +435,24 @@ const styles = StyleSheet.create({
 
   stepContent: { padding: 16 },
 
-  sectionCard: {
+  // Section header card
+  sectionHeaderCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
     backgroundColor: colors.white,
     borderRadius: 14,
     borderWidth: 1,
     borderColor: colors.border,
-    padding: 16,
-    marginBottom: 16,
-  },
-  sectionCardHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    paddingBottom: 14,
+    padding: 14,
     marginBottom: 14,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
   },
-  sectionIconBox: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: colors.primaryLight,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
+  sectionHeaderImage: { width: 48, height: 48, borderRadius: 10 },
   sectionCardTitle: { fontSize: 15, fontWeight: '700', color: colors.textPrimary },
   sectionCardSub: { fontSize: 12, color: colors.textSecondary, marginTop: 2 },
 
-  radioRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 16, marginBottom: 16 },
+  // Radio
+  radioRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 20, marginBottom: 14 },
   radioOpt: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   radioCircle: {
     width: 18, height: 18, borderRadius: 9,
@@ -441,37 +463,57 @@ const styles = StyleSheet.create({
   radioDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: colors.primary },
   radioLabel: { fontSize: 13, color: colors.textPrimary },
 
+  // Traveller card
   travellerCard: {
-    borderRadius: 10, borderWidth: 1, borderColor: colors.border,
-    padding: 12, marginBottom: 12,
+    backgroundColor: colors.white,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: 12,
+    marginBottom: 12,
   },
-  travellerHeader: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 10 },
-  travellerIconBox: {
-    width: 36, height: 36, borderRadius: 18,
-    backgroundColor: colors.primaryLight,
-    justifyContent: 'center', alignItems: 'center',
+  travellerRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 10 },
+  travellerIllustration: { width: 56, height: 72 },
+  travellerRight: { flex: 1 },
+  travellerTitleRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 8,
   },
   travellerTitle: { fontSize: 14, fontWeight: '700', color: colors.textPrimary },
-  travellerSub: { fontSize: 11, color: colors.textSecondary },
-  travellerFields: { flexDirection: 'row', gap: 10 },
+  travellerSub: { fontSize: 11, color: colors.textSecondary, marginTop: 2 },
+  removeBtn: {
+    width: 26, height: 26, borderRadius: 13,
+    borderWidth: 1, borderColor: colors.error || '#EF4444',
+    justifyContent: 'center', alignItems: 'center',
+  },
+  travellerFields: { flexDirection: 'row', gap: 8 },
   fieldLarge: {
     flex: 1, borderWidth: 1, borderColor: colors.border, borderRadius: 8,
-    paddingHorizontal: 12, paddingVertical: 9,
+    paddingHorizontal: 10, paddingVertical: 8,
     fontSize: 13, color: colors.textPrimary, backgroundColor: colors.background,
   },
   fieldSmall: {
-    width: 72, borderWidth: 1, borderColor: colors.border, borderRadius: 8,
-    paddingHorizontal: 12, paddingVertical: 9,
+    width: 64, borderWidth: 1, borderColor: colors.border, borderRadius: 8,
+    paddingHorizontal: 10, paddingVertical: 8,
     fontSize: 13, color: colors.textPrimary, backgroundColor: colors.background,
   },
 
-  addBtnRow: { flexDirection: 'row', gap: 10, marginTop: 4 },
+  // Add buttons
+  addBtnRow: { flexDirection: 'row', gap: 10, marginBottom: 20 },
   addBtn: {
-    flexDirection: 'row', alignItems: 'center',
+    flexDirection: 'row', alignItems: 'center', gap: 6,
     borderWidth: 1, borderColor: colors.border, borderRadius: 20,
-    paddingHorizontal: 14, paddingVertical: 7,
+    paddingHorizontal: 14, paddingVertical: 8,
+    backgroundColor: colors.white,
   },
-  addBtnText: { fontSize: 12, color: colors.textPrimary },
+  addBtnIcon: {
+    width: 18, height: 18, borderRadius: 9,
+    borderWidth: 1.5, borderColor: colors.textPrimary,
+    justifyContent: 'center', alignItems: 'center',
+  },
+  addBtnText: { fontSize: 13, color: colors.textPrimary, fontWeight: '500' },
 
   primaryBtn: {
     backgroundColor: colors.primary, borderRadius: 30,
@@ -479,30 +521,34 @@ const styles = StyleSheet.create({
   },
   primaryBtnText: { color: colors.white, fontWeight: '700', fontSize: 16 },
 
+  // Insurance
   insuranceCard: {
-    borderRadius: 10, borderWidth: 1, borderColor: colors.border, padding: 14,
+    backgroundColor: colors.white, borderRadius: 12,
+    borderWidth: 1, borderColor: colors.border,
+    padding: 14, marginBottom: 20,
   },
   insuranceCardActive: { borderColor: colors.primary, backgroundColor: colors.primaryLight },
   insuranceHeaderRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 12, marginBottom: 12 },
-  insuranceIconBox: {
-    width: 44, height: 44, borderRadius: 22,
-    backgroundColor: colors.primaryLight, justifyContent: 'center', alignItems: 'center',
-  },
-  insuranceHeaderText: { flex: 1 },
+  insuranceIllustration: { width: 56, height: 56, borderRadius: 8 },
+  insuranceHeaderText: { flex: 1, justifyContent: 'center' },
   insuranceTitle: { fontSize: 14, fontWeight: '700', color: colors.textPrimary },
-  insuranceSub: { fontSize: 11, color: colors.textSecondary, marginTop: 2 },
+  insuranceSub: { fontSize: 11, color: colors.textSecondary, marginTop: 3 },
   insuranceDivider: { height: 1, backgroundColor: colors.border, marginBottom: 12 },
-  benefitRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 8 },
+  benefitRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8 },
+  benefitIcon: { fontSize: 15 },
   benefitText: { fontSize: 13, color: colors.textSecondary },
   insuranceTotalPill: {
-    marginTop: 6, borderWidth: 1, borderColor: colors.border,
+    marginTop: 8, borderWidth: 1, borderColor: colors.border,
     borderRadius: 24, paddingVertical: 11, alignItems: 'center',
+    backgroundColor: colors.white,
   },
   insuranceTotalText: { fontSize: 13, fontWeight: '600', color: colors.textPrimary },
 
+  // Grand total
   grandTotalCard: {
-    backgroundColor: colors.primaryLight, borderRadius: 12,
-    padding: 16, marginBottom: 14, borderWidth: 1, borderColor: '#BFDBFE',
+    backgroundColor: '#EFF6FF', borderRadius: 12,
+    padding: 16, marginBottom: 14,
+    borderWidth: 1, borderColor: '#BFDBFE',
   },
   grandTotalTopRow: {
     flexDirection: 'row', justifyContent: 'space-between',
@@ -510,32 +556,35 @@ const styles = StyleSheet.create({
   },
   grandTotalLabel: { fontSize: 12, color: colors.textSecondary, fontWeight: '600' },
   offBadge: {
-    backgroundColor: colors.badge, borderRadius: 12,
-    paddingHorizontal: 8, paddingVertical: 3,
+    backgroundColor: colors.badge || '#F97316',
+    borderRadius: 12, paddingHorizontal: 10, paddingVertical: 4,
   },
   offBadgeText: { color: colors.white, fontSize: 11, fontWeight: '700' },
   grandTotalAmountRow: { flexDirection: 'row', alignItems: 'baseline' },
   rupeeSign: { fontSize: 22, fontWeight: '700', color: colors.textPrimary },
-  grandTotalAmount: { fontSize: 28, fontWeight: '900', color: colors.textPrimary },
+  grandTotalAmount: { fontSize: 30, fontWeight: '900', color: colors.textPrimary },
   grandTotalGst: { fontSize: 12, color: colors.textSecondary, marginLeft: 4 },
 
+  // Fare
   fareCard: {
     backgroundColor: colors.white, borderRadius: 14,
     borderWidth: 1, borderColor: colors.border, padding: 16, marginBottom: 16,
   },
   fareTitle: { fontSize: 16, fontWeight: '800', color: colors.textPrimary, marginBottom: 14 },
-  fareRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 },
-  fareLabel: { fontSize: 13, color: colors.textPrimary, fontWeight: '500' },
-  fareValue: { fontSize: 13, fontWeight: '600', color: colors.textPrimary },
-  discountValue: { color: colors.error },
-  fareSubText: { fontSize: 11, color: colors.textMuted, marginBottom: 10 },
+  fareRow: {
+    flexDirection: 'row', justifyContent: 'space-between',
+    alignItems: 'center', marginBottom: 4,
+  },
+  fareLabel: { fontSize: 14, color: colors.textPrimary, fontWeight: '500' },
+  fareValue: { fontSize: 14, fontWeight: '600', color: colors.textPrimary },
+  discountValue: { color: colors.error || '#EF4444' },
+  fareSubText: { fontSize: 11, color: colors.textMuted, marginBottom: 12 },
   fareSubLabel: { fontSize: 12, color: colors.textSecondary },
   fareSubValue: { fontSize: 12, color: colors.textSecondary },
-  fareDivider: { height: 1, backgroundColor: colors.border, marginVertical: 10 },
+  fareDivider: { height: 1, backgroundColor: colors.border, marginVertical: 12 },
 
   importantTitle: {
-    fontSize: 15, fontWeight: '800', color: colors.textPrimary,
-    marginTop: 16, marginBottom: 10,
+    fontSize: 15, fontWeight: '800', color: colors.textPrimary, marginBottom: 12,
   },
   termsRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 10 },
   checkbox: {

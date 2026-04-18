@@ -1,11 +1,18 @@
 import React from 'react';
-import { View, Text, ImageBackground, TouchableOpacity, Image, StyleSheet } from 'react-native';
+import {
+  View,
+  Text,
+  ImageBackground,
+  TouchableOpacity,
+  StyleSheet,
+} from 'react-native';
 import { Bell } from 'lucide-react-native';
 import colors from '../../../theme/colors';
 
-const HERO_IMAGE = 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800';
+const HERO_IMAGE =
+  'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800';
 
-const HeroHeader = ({ userName, avatarUrl, onNotificationPress, onAvatarPress }) => {
+const HeroHeader = ({ onNotificationPress }) => {
   return (
     <ImageBackground
       source={{ uri: HERO_IMAGE }}
@@ -13,30 +20,28 @@ const HeroHeader = ({ userName, avatarUrl, onNotificationPress, onAvatarPress })
       imageStyle={styles.heroImage}
     >
       <View style={styles.overlay} />
+
+      {/* 🔥 Only notification now */}
       <View style={styles.topRow}>
-        <TouchableOpacity onPress={onNotificationPress} style={styles.notifBtn}>
+        <TouchableOpacity
+          onPress={onNotificationPress}
+          style={styles.notifBtn}
+        >
           <Bell size={22} color={colors.white} />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={onAvatarPress}>
-          {avatarUrl ? (
-            <Image source={{ uri: avatarUrl }} style={styles.avatar} />
-          ) : (
-            <View style={styles.avatarPlaceholder}>
-              <Text style={styles.avatarInitial}>
-                {userName ? userName[0].toUpperCase() : 'U'}
-              </Text>
-            </View>
-          )}
         </TouchableOpacity>
       </View>
 
       <View style={styles.titleBlock}>
         <Text style={styles.heading}>Where will your</Text>
-        <Text style={styles.headingAccent}>next adventure take you?</Text>
+        <Text style={styles.headingAccent}>
+          next adventure take you?
+        </Text>
       </View>
     </ImageBackground>
   );
 };
+
+export default HeroHeader;
 
 const styles = StyleSheet.create({
   hero: {
@@ -58,34 +63,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-end',
     alignItems: 'center',
-    gap: 12,
   },
   notifBtn: {
     backgroundColor: 'rgba(255,255,255,0.2)',
     borderRadius: 20,
     padding: 8,
-  },
-  avatar: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
-    borderWidth: 2,
-    borderColor: colors.white,
-  },
-  avatarPlaceholder: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
-    backgroundColor: colors.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 2,
-    borderColor: colors.white,
-  },
-  avatarInitial: {
-    color: colors.white,
-    fontWeight: '700',
-    fontSize: 16,
   },
   titleBlock: {
     marginBottom: 8,
@@ -101,5 +83,3 @@ const styles = StyleSheet.create({
     fontWeight: '800',
   },
 });
-
-export default HeroHeader;

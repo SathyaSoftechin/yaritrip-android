@@ -22,6 +22,33 @@ const profileService = {
     }
   },
 
+
+uploadProfileImage: async (file) => {
+  try {
+    const formData = new FormData();
+
+    formData.append('file', {
+      uri: file.uri,
+      name: file.fileName || 'profile.jpg',
+      type: file.type || 'image/jpeg',
+    });
+
+    const response = await apiClient.post(
+      '/api/users/upload-profile',
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    throw error?.response?.data || error;
+  }
+},
+
   logout: async () => {
     try {
       const response = await apiClient.post('/api/auth/logout');

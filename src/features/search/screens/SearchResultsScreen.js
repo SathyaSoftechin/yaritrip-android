@@ -39,7 +39,6 @@ const SearchResultsScreen = ({ navigation, route }) => {
     handlePackagePress,
   } = useSearch(navigation, initialForm);
 
-  // In no-params mode the list is auto-loaded; show it as soon as data arrives
   const shouldShowList = hasSearched || (noParamsMode && !packagesLoading);
 
   return (
@@ -49,9 +48,11 @@ const SearchResultsScreen = ({ navigation, route }) => {
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
           <ArrowLeft size={22} color={colors.textPrimary} />
         </TouchableOpacity>
+
         <Text style={styles.screenTitle}>
           {noParamsMode ? 'All Packages' : 'Search Results'}
         </Text>
+
         <TouchableOpacity
           style={styles.filterBtn}
           onPress={() => setFilterVisible(true)}
@@ -60,7 +61,7 @@ const SearchResultsScreen = ({ navigation, route }) => {
         </TouchableOpacity>
       </View>
 
-      {/* Search Card — always shown so the user can refine */}
+      {/* Search */}
       <SearchBar
         form={form}
         onChange={handleFormChange}
@@ -85,15 +86,19 @@ const SearchResultsScreen = ({ navigation, route }) => {
         </Text>
       )}
 
-      {/* Results list */}
+      {/* List */}
       {!packagesLoading && !packagesError && shouldShowList && (
         <FlatList
           data={packages}
-          keyExtractor={item => `result-${String(item.id)}`}
+          keyExtractor={(item) => `result-${String(item.id)}`}
+          numColumns={2}
+          columnWrapperStyle={styles.row}
           contentContainerStyle={styles.list}
           showsVerticalScrollIndicator={false}
           renderItem={({ item }) => (
-            <PackageCard item={item} onPress={handlePackagePress} />
+            <View style={styles.cardWrapper}>
+              <PackageCard item={item} onPress={handlePackagePress} />
+            </View>
           )}
           ListEmptyComponent={
             <Text style={styles.emptyText}>
@@ -103,14 +108,14 @@ const SearchResultsScreen = ({ navigation, route }) => {
         />
       )}
 
-      {/* Hint — only when no params and not yet loaded */}
+      {/* Hint */}
       {!noParamsMode && !hasSearched && !packagesLoading && (
         <Text style={styles.hintText}>
           Fill in your details above and tap Search.
         </Text>
       )}
 
-      {/* Filter Sheet */}
+      {/* Filter */}
       <FilterSheet
         visible={filterVisible}
         filters={filters}
@@ -118,7 +123,7 @@ const SearchResultsScreen = ({ navigation, route }) => {
         onClose={() => setFilterVisible(false)}
       />
 
-      {/* City Picker Modals */}
+      {/* City Pickers */}
       <CityPickerModal
         visible={fromPickerOpen}
         cities={cities}
@@ -142,15 +147,18 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
   },
+
   topBar: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 12,
   },
+
   backBtn: {
     marginRight: 8,
   },
+
   screenTitle: {
     flex: 1,
     fontSize: 18,
@@ -158,25 +166,39 @@ const styles = StyleSheet.create({
     color: colors.textPrimary,
     textAlign: 'center',
   },
+
   filterBtn: {
     padding: 6,
     backgroundColor: colors.primaryLight,
     borderRadius: 10,
   },
+
   loader: {
     marginTop: 40,
   },
+
   errorText: {
     color: colors.error,
     textAlign: 'center',
     marginTop: 24,
     fontSize: 14,
   },
+
   list: {
-    paddingHorizontal: 16,
+    paddingHorizontal: 12,
     paddingTop: 16,
     paddingBottom: 32,
   },
+
+  row: {
+    justifyContent: 'space-between',
+    marginBottom: 12,
+  },
+
+  cardWrapper: {
+    flex: 0.48,
+  },
+
   emptyText: {
     color: colors.textMuted,
     textAlign: 'center',
@@ -184,6 +206,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     paddingHorizontal: 24,
   },
+
   hintText: {
     color: colors.textMuted,
     textAlign: 'center',

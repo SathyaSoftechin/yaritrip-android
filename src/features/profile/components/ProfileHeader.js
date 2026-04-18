@@ -1,35 +1,56 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+} from 'react-native';
 import { Pencil } from 'lucide-react-native';
 import colors from '../../../theme/colors';
+import { BASE_URL } from '../../../services/apiClient';
 
 const ProfileHeader = ({ user, onAvatarPress, showEdit = false }) => {
   const initial = user?.name ? user.name[0].toUpperCase() : 'U';
 
+const avatarUri = user?.profileImage
+  ? user.profileImage.replace('http://localhost:8082', BASE_URL)
+  : user?.avatarUrl || null;
+
   return (
     <View style={styles.container}>
-      {/* Decorative wave / blob shape top-right */}
+      {/* Decorative blobs */}
       <View style={styles.blobTopRight} />
       <View style={styles.blobBottomRight} />
 
       <View style={styles.row}>
-        {/* Avatar */}
-        <View style={styles.avatarWrapper}>
-          {user?.avatarUrl ? (
-            <Image source={{ uri: user.avatarUrl }} style={styles.avatar} />
+        <TouchableOpacity
+          activeOpacity={0.85}
+          onPress={showEdit ? onAvatarPress : undefined}
+          style={styles.avatarWrapper}
+        >
+          {avatarUri ? (
+            <Image
+              source={{ uri: avatarUri }}
+              style={styles.avatar}
+              onError={() => {
+                console.log('Image failed to load');
+              }}
+            />
           ) : (
             <View style={styles.avatarPlaceholder}>
               <Text style={styles.avatarInitial}>{initial}</Text>
             </View>
           )}
-          {showEdit && (
-            <TouchableOpacity style={styles.editBadge} onPress={onAvatarPress} activeOpacity={0.8}>
-              <Pencil size={11} color={colors.white} />
-            </TouchableOpacity>
-          )}
-        </View>
 
-        {/* Name + email */}
+          {showEdit && (
+            <View style={styles.editBadge}>
+              <Pencil size={11} color={colors.white} />
+            </View>
+          )}
+        </TouchableOpacity>
+
+        {/* Info */}
         <View style={styles.info}>
           <Text style={styles.name}>{user?.name || 'User'}</Text>
           <Text style={styles.email}>{user?.email || ''}</Text>
@@ -38,6 +59,8 @@ const ProfileHeader = ({ user, onAvatarPress, showEdit = false }) => {
     </View>
   );
 };
+
+export default ProfileHeader;
 
 const styles = StyleSheet.create({
   container: {
@@ -54,7 +77,8 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 3,
   },
-  // Decorative blobs matching the screenshot's subtle grey shapes
+
+  // Decorative blobs
   blobTopRight: {
     position: 'absolute',
     width: 130,
@@ -73,21 +97,23 @@ const styles = StyleSheet.create({
     bottom: -20,
     right: 60,
   },
+
   row: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 14,
   },
+
   avatarWrapper: {
     position: 'relative',
   },
+
   avatar: {
     width: 64,
     height: 64,
     borderRadius: 32,
-    borderWidth: 2.5,
-    borderColor: colors.primary,
   },
+
   avatarPlaceholder: {
     width: 64,
     height: 64,
@@ -98,11 +124,13 @@ const styles = StyleSheet.create({
     borderWidth: 2.5,
     borderColor: colors.primaryLight,
   },
+
   avatarInitial: {
     color: colors.white,
     fontSize: 26,
     fontWeight: '700',
   },
+
   editBadge: {
     position: 'absolute',
     bottom: 0,
@@ -116,19 +144,20 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: colors.white,
   },
+
   info: {
     flex: 1,
   },
+
   name: {
     fontSize: 17,
     fontWeight: '700',
     color: colors.textPrimary,
     marginBottom: 2,
   },
+
   email: {
     fontSize: 13,
     color: colors.textSecondary,
   },
 });
-
-export default ProfileHeader;

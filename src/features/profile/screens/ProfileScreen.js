@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -19,17 +19,19 @@ import {
   LogOut,
 } from 'lucide-react-native';
 import { useFocusEffect } from '@react-navigation/native';
+import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
+
 import ProfileMenuItem from '../components/ProfileMenuItem';
 import ProfileHeader from '../components/ProfileHeader';
 import BottomTabBar from '../../home/components/BottomTabBar';
-import { useProfile, useLogout } from '../hooks/useProfile';
-import colors from '../../../theme/colors';
 
-const FAKE_USER = {
-  name: 'Ravi Kumar',
-  email: 'ravikumar@gmail.com',
-  avatarUrl: null,
-};
+import {
+  useProfile,
+  useLogout,
+  useUploadProfileImage,
+} from '../hooks/useProfile';
+
+import colors from '../../../theme/colors';
 
 const MENU_ITEMS = [
   {
@@ -73,8 +75,10 @@ const MENU_ITEMS = [
 const ProfileScreen = ({ navigation }) => {
   const { data: user, isLoading } = useProfile();
   const { mutate: logout, isPending: isLoggingOut } = useLogout();
+  const { mutate: uploadImage, isPending: uploading } =
+    useUploadProfileImage();
+
   const [bottomTab, setBottomTab] = useState('profile');
-  const displayUser = user || FAKE_USER;
 
   useFocusEffect(
     useCallback(() => {
@@ -82,45 +86,85 @@ const ProfileScreen = ({ navigation }) => {
     }, [])
   );
 
+  // ─── IMAGE PICKER ─────────────────────────────
+  const handleAvatarPress = () => {
+    Alert.alert('Change Profile Photo', 'Choose option', [
+      { text: 'Camera', onPress: openCamera },
+      { text: 'Gallery', onPress: openGallery },
+      { text: 'Cancel', style: 'cancel' },
+    ]);
+  };
+
+  const openCamera = async () => {
+    const res = await launchCamera({ mediaType: 'photo', quality: 0.7 });
+    handleImage(res);
+  };
+
+  const openGallery = async () => {
+    const res = await launchImageLibrary({
+      mediaType: 'photo',
+      quality: 0.7,
+    });
+    handleImage(res);
+  };
+
+  const handleImage = (res) => {
+    if (res.didCancel) return;
+
+    if (res.errorCode) {
+      Alert.alert('Error', res.errorMessage || 'Image picker error');
+      return;
+    }
+
+    const file = res.assets?.[0];
+    if (!file?.uri) return;
+
+    uploadImage(file, {
+      onSuccess: () => Alert.alert('Success', 'Photo updated'),
+      onError: () => Alert.alert('Error', 'Upload failed'),
+    });
+  };
+
+  // ─── LOGOUT ─────────────────────────────────
   const handleLogout = () => {
-    Alert.alert(
-      'Log Out',
-      'Are you sure you want to log out?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Log Out',
-          style: 'destructive',
-          onPress: () => {
-            logout(undefined, {
-              onSuccess: () => navigation.replace('Login'),
-              onError: () => navigation.replace('Login'),
-            });
-          },
+    Alert.alert('Log Out', 'Are you sure?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Log Out',
+        style: 'destructive',
+        onPress: () => {
+          logout(undefined, {
+            onSuccess: () => navigation.replace('Login'),
+            onError: () => navigation.replace('Login'),
+          });
         },
-      ]
-    );
+      },
+    ]);
   };
 
   return (
     <SafeAreaView style={styles.safe}>
       <View style={styles.root}>
-        <ScrollView
-          style={styles.scroll}
-          contentContainerStyle={styles.content}
-          showsVerticalScrollIndicator={false}
-        >
-          {/* Screen title */}
+        <ScrollView contentContainerStyle={styles.content}>
           <Text style={styles.screenTitle}>My Profile</Text>
 
-          {/* Profile header card */}
+          {/* Profile Header */}
           {isLoading ? (
-            <ActivityIndicator color={colors.primary} style={styles.loader} />
+            <ActivityIndicator />
           ) : (
-            <ProfileHeader user={displayUser} />
+            <ProfileHeader
+              user={user}
+              showEdit
+              onAvatarPress={handleAvatarPress}
+            />
           )}
 
-          {/* Menu items */}
+          {/* Upload indicator */}
+          {uploading && (
+            <Text style={styles.uploadingText}>Uploading...</Text>
+          )}
+
+          {/* MENU ITEMS (UNCHANGED) */}
           <View style={styles.menuSection}>
             {MENU_ITEMS.map((item, index) => (
               <ProfileMenuItem
@@ -134,11 +178,10 @@ const ProfileScreen = ({ navigation }) => {
             ))}
           </View>
 
-          {/* Logout button */}
+          {/* Logout */}
           <TouchableOpacity
-            style={[styles.logoutBtn, isLoggingOut && styles.logoutBtnDisabled]}
+            style={[styles.logoutBtn, isLoggingOut && styles.disabled]}
             onPress={handleLogout}
-            activeOpacity={0.8}
             disabled={isLoggingOut}
           >
             {isLoggingOut ? (
@@ -151,7 +194,7 @@ const ProfileScreen = ({ navigation }) => {
             )}
           </TouchableOpacity>
 
-          <View style={styles.bottomPadding} />
+          <View style={{ height: 100 }} />
         </ScrollView>
 
         <BottomTabBar activeTab={bottomTab} navigation={navigation} />
@@ -160,35 +203,33 @@ const ProfileScreen = ({ navigation }) => {
   );
 };
 
+export default ProfileScreen;
+
 const styles = StyleSheet.create({
-  safe: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  root: {
-    flex: 1,
-  },
-  scroll: {
-    flex: 1,
-  },
-  content: {
-    paddingBottom: 20,
-  },
+  safe: { flex: 1, backgroundColor: colors.background },
+  root: { flex: 1 },
+
+  content: { paddingBottom: 20 },
+
   screenTitle: {
     fontSize: 22,
     fontWeight: '700',
-    color: colors.textPrimary,
     paddingHorizontal: 20,
     paddingTop: 16,
     paddingBottom: 12,
   },
-  loader: {
-    marginVertical: 40,
+
+  uploadingText: {
+    textAlign: 'center',
+    color: colors.primary,
+    marginBottom: 8,
   },
+
   menuSection: {
     paddingHorizontal: 16,
     marginTop: 4,
   },
+
   logoutBtn: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -202,17 +243,12 @@ const styles = StyleSheet.create({
     borderColor: colors.error,
     backgroundColor: colors.white,
   },
-  logoutBtnDisabled: {
-    opacity: 0.6,
-  },
+
+  disabled: { opacity: 0.6 },
+
   logoutText: {
     color: colors.error,
     fontSize: 15,
     fontWeight: '600',
   },
-  bottomPadding: {
-    height: 100,
-  },
 });
-
-export default ProfileScreen;

@@ -62,6 +62,18 @@ export const useUpdateProfile = () => {
   });
 };
 
+
+export const useUploadProfileImage = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: profileService.uploadProfileImage,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['userProfile'] });
+    },
+  });
+};
+
 export const useLogout = () => {
   const clearAuth = useAuthStore(state => state.clearAuth);
   const queryClient = useQueryClient();
