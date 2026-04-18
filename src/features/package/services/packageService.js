@@ -4,8 +4,7 @@ import apiClient from '../../../services/apiClient';
 
 export const fetchPackageById = async (packageId) => {
   const response = await apiClient.get(`/api/packages/${packageId}`);
-  // API returns an array [ {...} ] — extract the first element
-  const data = Array.isArray(response.data) ? response.data[0] : response.data;
+  const data = response.data;
   if (!data) throw new Error('Package not found');
   return data;
 };
@@ -52,7 +51,28 @@ export const createBooking = async ({ packageId, totalAmount, travellers }) => {
   return response.data;
 };
 
-// ─── Fake data (until backend endpoints are ready) ───────────────────────────
+export const updateTravellers = async (bookingId, { travellers }) => {
+  const response = await apiClient.put(`/api/bookings/${bookingId}/travellers`, {
+    travellers,
+  });
+  return response.data;
+};
+
+export const confirmBooking = async (bookingId) => {
+  const response = await apiClient.post(`/api/bookings/${bookingId}/confirm`);
+  return response.data;
+};
+
+export const createPayment = async (bookingId) => {
+  const response = await apiClient.post(`/api/bookings/${bookingId}/payment`);
+  return response.data;
+};
+
+export const paymentSuccess = async (bookingId) => {
+  const response = await apiClient.post(`/api/bookings/${bookingId}/payment-success`);
+  return response.data;
+};
+
 
 export const FAKE_ACTIVITIES = [
   {

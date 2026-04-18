@@ -20,16 +20,17 @@ import BottomTabBar from '../components/BottomTabBar';
 import CityPickerModal from '../components/CityPickerModal';
 import StaysSection from '../components/StaysSection';
 import colors from '../../../theme/colors';
-import { useAuthStore } from '../../../store/authStore';
+
 
 const HomeScreen = ({ navigation }) => {
-  const user = useAuthStore(state => state.user);
   const [bottomTab, setBottomTab] = useState('home');
   const [fromPickerOpen, setFromPickerOpen] = useState(false);
   const [toPickerOpen, setToPickerOpen] = useState(false);
 
   const safeKey = (prefix) => (item, index) =>
     item?.id ? `${prefix}-${item.id}` : `${prefix}-fallback-${index}`;
+
+
 
   const {
     cities,
@@ -72,7 +73,7 @@ const HomeScreen = ({ navigation }) => {
         overScrollMode="never"
       >
         {/* Hero */}
-        <HeroHeader userName={user?.name} avatarUrl={user?.avatarUrl} />
+        <HeroHeader />
 
         {/* Search Card */}
         <View style={styles.searchBarWrapper}>

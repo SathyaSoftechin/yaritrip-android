@@ -3,6 +3,7 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 import {
   fetchPackageById,
   calculatePackagePrice,
+  createBooking,
 } from '../services/packageService';
 import { BASE_URL } from '../../../services/apiClient';
 
@@ -54,6 +55,19 @@ const usePackageDetail = (packageId) => {
   const decrementTravellers = useCallback(() => {
     setTravellersCount((prev) => Math.max(prev - 1, 1));
   }, []);
+
+  // ── Initiate booking — called on "Book Now" ──────────────────
+  const {
+    mutate: initiateBooking,
+    isPending: isBookingInitiating,
+  } = useMutation({
+    mutationFn: () =>
+      createBooking({
+        packageId,
+        totalAmount: displayPrice,
+        travellers: [],
+      }),
+  });
 
   // ── Images ───────────────────────────────────────────────────
   const bannerImages = packageData?.images?.length
@@ -126,6 +140,8 @@ const usePackageDetail = (packageId) => {
     originalPrice,
     handleRecalculate,
     isPriceLoading,
+    initiateBooking,
+    isBookingInitiating,
   };
 };
 
