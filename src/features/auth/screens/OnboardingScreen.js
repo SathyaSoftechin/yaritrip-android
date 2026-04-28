@@ -96,7 +96,7 @@ const OnboardingScreen = ({ navigation }) => {
         <PrimaryButton label="Next" onPress={handleNext} style={styles.button} />
         <Dots current={currentIndex} total={SLIDES.length} />
         <Image
-          source={require('../../../assets/logo.jpg')}
+          source={require('../../../assets/logo_onboarding.jpg')}
           style={styles.logo}
           resizeMode="contain"
         />

@@ -28,7 +28,7 @@ const TravellerForm = ({ traveller, index, onChange, onRemove, canRemove }) => (
     <View style={styles.travellerRow}>
       {/* Illustration */}
       <Image
-        source={require('../../../assets/traveller-illustration.png')}
+        source={require('../../../assets/traveller_illustration.png')}
         style={styles.travellerIllustration}
         resizeMode="contain"
       />
@@ -81,7 +81,7 @@ const TravellerDetailsStep = ({
     {/* Section Header */}
     <View style={styles.sectionHeaderCard}>
       <Image
-        source={require('../../../assets/traveller-place.png')}
+        source={require('../../../assets/traveller_place.jpg')}
         style={styles.sectionHeaderImage}
         resizeMode="contain"
       />
@@ -156,7 +156,7 @@ const AddOnsStep = ({
     {/* Section Header */}
     <View style={styles.sectionHeaderCard}>
       <Image
-        source={require('../../../assets/insurance-square.png')}
+        source={require('../../../assets/insurance_square.jpg')}
         style={styles.sectionHeaderImage}
         resizeMode="contain"
       />
@@ -174,7 +174,7 @@ const AddOnsStep = ({
     >
       <View style={styles.insuranceHeaderRow}>
         <Image
-          source={require('../../../assets/insurance-illustration.png')}
+          source={require('../../../assets/insurance_illustration.jpg')}
           style={styles.insuranceIllustration}
           resizeMode="contain"
         />
