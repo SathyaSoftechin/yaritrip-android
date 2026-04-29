@@ -1,97 +1,176 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# YariTrip – Android Setup and Build Guide
 
-# Getting Started
+This is a quick guide to run the app locally, update the backend IP, and generate debug and release APKs.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+---
 
-## Step 1: Start Metro
+## Prerequisites
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+Make sure the following are installed:
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+* Node.js (v18 or above)
+* Java JDK 17
+* Android Studio with SDK and emulator
+* An Android device or emulator
 
-```sh
-# Using npm
-npm start
+---
 
-# OR using Yarn
-yarn start
+## Setup
+
+Clone the repository and install dependencies:
+
+```
+git clone <repo-url>
+cd yaritrip-android
+npm install
 ```
 
-## Step 2: Build and run your app
+---
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
+## Update API IP
 
-### Android
+Before running the app, update the backend URL.
 
-```sh
-# Using npm
-npm run android
+Open:
 
-# OR using Yarn
-yarn android
+```
+src/api/apiClient.js
 ```
 
-### iOS
+Find the base URL:
 
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
-
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
-
-```sh
-bundle install
+```js
+baseURL: "http://192.168.x.x:5000"
 ```
 
-Then, and every time you update your native dependencies, run:
+Replace it with your local machine IP:
 
-```sh
-bundle exec pod install
+```js
+baseURL: "http://YOUR_IP:PORT"
 ```
 
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
+Example:
 
-```sh
-# Using npm
-npm run ios
-
-# OR using Yarn
-yarn ios
+```
+http://192.168.1.5:5000
 ```
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+Make sure:
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
+* The backend server is running
+* Your phone/emulator is on the same network
 
-## Step 3: Modify your app
+---
 
-Now that you have successfully run the app, let's make changes!
+## Running the App (Debug)
 
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
+Start Metro:
 
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
+```
+npx react-native start
+```
 
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
+In another terminal:
 
-## Congratulations! :tada:
+```
+npx react-native run-android
+```
 
-You've successfully run and modified your React Native App. :partying_face:
+The app should install and open automatically.
 
-### Now what?
+---
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
+## Debug APK
 
-# Troubleshooting
+To generate a debug APK:
 
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
+```
+cd android
+gradlew assembleDebug
+```
 
-# Learn More
+Output:
 
-To learn more about React Native, take a look at the following resources:
+```
+android/app/build/outputs/apk/debug/app-debug.apk
+```
 
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+---
+
+## Release APK
+
+### Keystore (one-time setup)
+
+Generate a keystore:
+
+```
+keytool -genkeypair -v -storetype PKCS12 -keystore my-release-key.keystore -alias my-key-alias -keyalg RSA -keysize 2048 -validity 10000
+```
+
+Place the file inside:
+
+```
+android/app/
+```
+
+---
+
+### Add credentials
+
+Open:
+
+```
+android/gradle.properties
+```
+
+Add:
+
+```
+MYAPP_UPLOAD_STORE_FILE=my-release-key.keystore
+MYAPP_UPLOAD_KEY_ALIAS=my-key-alias
+MYAPP_UPLOAD_STORE_PASSWORD=yourpassword
+MYAPP_UPLOAD_KEY_PASSWORD=yourpassword
+```
+
+---
+
+### Build release APK
+
+```
+cd android
+gradlew assembleRelease
+```
+
+Output:
+
+```
+android/app/build/outputs/apk/release/app-release.apk
+```
+
+---
+
+## After Code Changes
+
+* For development, just reload the app in debug mode
+* For release builds, run:
+
+```
+gradlew assembleRelease
+```
+
+---
+
+## Common Issues
+
+App shows "check your connection":
+
+* Verify API IP is correct
+* Backend is running
+* Device and backend are on the same network
+
+Build issues:
+
+```
+cd android
+gradlew clean
+```
