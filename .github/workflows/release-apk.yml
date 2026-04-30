@@ -31,7 +31,7 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      # 5. Setup Android SDK (IMPORTANT for RN builds)
+      # 5. Setup Android SDK
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
@@ -40,11 +40,19 @@ jobs:
         run: |
           echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/app/yaritrip.keystore
 
-      # 7. Give permission to gradlew
+      # 7. Generate version name
+      - name: Generate version
+        id: version
+        run: |
+          VERSION_NAME="v1.0.${GITHUB_RUN_NUMBER}"
+          echo "VERSION_NAME=$VERSION_NAME" >> $GITHUB_ENV
+          echo "Generated version: $VERSION_NAME"
+
+      # 8. Give permission to gradlew
       - name: Grant execute permission
         run: chmod +x android/gradlew
 
-      # 8. Build Release APK
+      # 9. Build Release APK
       - name: Build Release APK
         env:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
@@ -54,9 +62,24 @@ jobs:
           cd android
           ./gradlew assembleRelease
 
-      # 9. Upload APK
-      - name: Upload APK
+      # 10. Upload APK
+      - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: app-release
           path: android/app/build/outputs/apk/release/app-release.apk
+
+      # 11. Create GitHub Release
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.VERSION_NAME }}
+          name: Release ${{ env.VERSION_NAME }}
+          files: android/app/build/outputs/apk/release/app-release.apk
+          body: |
+            Automated release build
+
+            Version: ${{ env.VERSION_NAME }}
+            Commit: ${{ github.sha }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
