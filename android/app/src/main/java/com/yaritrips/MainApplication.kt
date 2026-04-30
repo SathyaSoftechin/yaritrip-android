@@ -1,4 +1,4 @@
-package com.yaritrip
+package com.yaritrips
 
 import android.app.Application
 import com.facebook.react.PackageList

@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { useAuthStore } from '../store/authStore';
 
-export const BASE_URL = 'http://192.168.88.32:8082';
+export const BASE_URL = 'http://192.168.1.40:8082';
 
 const apiClient = axios.create({
   baseURL: BASE_URL,
