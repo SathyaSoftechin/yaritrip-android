@@ -1,14 +1,14 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import HomeScreen from '../features/home/screens/HomeScreen';
+import HomeScreen from '../screens/HomeScreen';
 import ProfileNavigator from './ProfileNavigator';
-import SearchResults from '../features/search/screens/SearchResultsScreen';
+import SearchResults from '../screens/SearchResultsScreen';
 
-// Package feature screens
-import PackageDetailScreen from '../features/package/screens/PackageDetailScreen';
-import ChangeHotelScreen from '../features/package/screens/ChangeHotelScreen';
-import AddActivityScreen from '../features/package/screens/AddActivityScreen';
-import ReviewPackageScreen from '../features/package/screens/ReviewPackageScreen';
+// Package screens
+import PackageDetailScreen from '../screens/PackageDetailScreen';
+import ChangeHotelScreen from '../screens/ChangeHotelScreen';
+import AddActivityScreen from '../screens/AddActivityScreen';
+import ReviewPackageScreen from '../screens/ReviewPackageScreen';
 
 const Stack = createNativeStackNavigator();
 
