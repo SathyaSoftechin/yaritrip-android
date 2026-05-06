@@ -8,7 +8,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import AuthNavigator from './src/navigation/AuthNavigator';
 import AppNavigator from './src/navigation/AppNavigator';
 import { useAuthStore } from './src/store/authStore';
-import useOAuthDeepLink from './src/navigation/useOAuthDeepLink';
+import useOAuthDeepLink from './src/hooks/useOAuthDeepLink';
 
 const queryClient = new QueryClient();
 

@@ -1,12 +1,12 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import ProfileScreen from '../features/profile/screens/ProfileScreen';
-import PersonalInfoScreen from '../features/profile/screens/PersonalInfoScreen';
-import MyBookingsScreen from '../features/profile/screens/MyBookingsScreen';
-import LikesScreen from '../features/profile/screens/LikesScreen';
-import PrivacyPolicyScreen from '../features/profile/screens/PrivacyPolicyScreen';
-import LanguageScreen from '../features/profile/screens/LanguageScreen';
-import TermsScreen from '../features/profile/screens/TermsScreen';
+import ProfileScreen from '../screens/ProfileScreen';
+import PersonalInfoScreen from '../screens/PersonalInfoScreen';
+import MyBookingsScreen from '../screens/MyBookingsScreen';
+import LikesScreen from '../screens/LikesScreen';
+import PrivacyPolicyScreen from '../screens/PrivacyPolicyScreen';
+import LanguageScreen from '../screens/LanguageScreen';
+import TermsScreen from '../screens/TermsScreen';
 
 const Stack = createNativeStackNavigator();
 
