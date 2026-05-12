@@ -9,24 +9,20 @@ const DEFAULT_FORM = {
   toDestination: '',
   toCityId: null,
   toCode: '',
-  when: '',
-  members: '',
 };
 
-// Returns true when the form has enough data to trigger a search
 const isFormComplete = (form) =>
-  !!form.fromCode && !!form.toCode && !!form.when && !!form.members;
+  !!form.fromCode && !!form.toCode;
 
 export const useSearch = (navigation, initialForm = {}) => {
   const [form, setForm] = useState({ ...DEFAULT_FORM, ...initialForm });
   const [hasSearched, setHasSearched] = useState(false);
   const [filters, setFilters] = useState({
-    budgetRange: null,     // { min, max } — matches pkg.price
-    durationRange: null,   // { min, max } — matches pkg.totalDays
-    category: null,        // 'DOMESTIC' | 'INTERNATIONAL' — matches pkg.category
+    budgetRange: null,
+    durationRange: null,
+    category: null,
   });
 
-  // True when the screen was opened without a complete search form
   const noParamsMode = !isFormComplete({ ...DEFAULT_FORM, ...initialForm });
 
   // ─── All packages (no-params mode) ───────────────────────────────────────────
@@ -41,14 +37,13 @@ export const useSearch = (navigation, initialForm = {}) => {
     staleTime: 5 * 60 * 1000,
   });
 
-  // Mark hasSearched once the all-packages query has resolved
   useEffect(() => {
     if (noParamsMode && allPackages.length > 0) {
       setHasSearched(true);
     }
   }, [noParamsMode, allPackages]);
 
-  // ─── Cities (From City dropdown) ────────────────────────────────────────────
+  // ─── Cities ──────────────────────────────────────────────────────────────────
   const {
     data: cities = [],
     isLoading: citiesLoading,
@@ -59,7 +54,7 @@ export const useSearch = (navigation, initialForm = {}) => {
     staleTime: 10 * 60 * 1000,
   });
 
-  // ─── Destinations (depends on fromCityId) ────────────────────────────────────
+  // ─── Destinations ─────────────────────────────────────────────────────────────
   const {
     data: destinations = [],
     isLoading: destinationsLoading,
@@ -84,17 +79,9 @@ export const useSearch = (navigation, initialForm = {}) => {
   // Auto-fire search if navigated in with a fully populated form
   useEffect(() => {
     if (!noParamsMode) {
-      const { fromCode, toCode, when, members } = form;
-      const [rooms, guests] = members.split(',').map(Number);
-      triggerSearch({
-        fromCode,
-        toCode,
-        date: when,
-        rooms: rooms || 1,
-        guests: guests || 1,
-      });
+      const { fromCode, toCode } = form;
+      triggerSearch({ fromCode, toCode });
     }
-    // Only runs once on mount
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -142,17 +129,9 @@ export const useSearch = (navigation, initialForm = {}) => {
   }, []);
 
   const handleSearch = useCallback(() => {
-    const { fromCode, toCode, when, members } = form;
-    if (!fromCode || !toCode || !when || !members) return;
-
-    const [rooms, guests] = members.split(',').map(Number);
-    triggerSearch({
-      fromCode,
-      toCode,
-      date: when,
-      rooms: rooms || 1,
-      guests: guests || 1,
-    });
+    const { fromCode, toCode } = form;
+    if (!fromCode || !toCode) return;
+    triggerSearch({ fromCode, toCode });
   }, [form, triggerSearch]);
 
   const handleFilterChange = useCallback((key, value) => {
@@ -165,21 +144,18 @@ export const useSearch = (navigation, initialForm = {}) => {
 
   // ─── Client-side filter application ──────────────────────────────────────────
   const filteredPackages = rawPackages.filter(pkg => {
-    // Budget filter → pkg.price
     if (filters.budgetRange) {
       const { min, max } = filters.budgetRange;
       const price = pkg.price ?? 0;
       if (price < min || price > max) return false;
     }
 
-    // Duration filter → pkg.totalDays
     if (filters.durationRange) {
       const { min, max } = filters.durationRange;
       const days = pkg.totalDays ?? 0;
       if (days < min || days > max) return false;
     }
 
-    // Category filter → pkg.category ('DOMESTIC' | 'INTERNATIONAL')
     if (filters.category) {
       if ((pkg.category ?? '').toUpperCase() !== filters.category) return false;
     }

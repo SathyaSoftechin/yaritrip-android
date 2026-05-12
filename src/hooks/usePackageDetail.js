@@ -7,17 +7,51 @@ import {
 } from '../services/packageService';
 import { BASE_URL } from '../services/apiClient';
 
-// ── Resolve image URLs ─────────────────────────────────────────
 const resolveImage = (url) => {
   if (!url) return null;
   if (url.startsWith('http')) return url;
   return `${BASE_URL}${url}`;
 };
 
+// Fake day template used when itinerary is missing
+const buildFakeDay = (i, packageData, bannerImages) => ({
+  dayNumber: i + 1,
+  title: packageData.title || 'Package',
+  description: null,
+  included: 'Flight, Hotel and Transport',
+  hotel: {
+    name: 'Sharanam Greens Resort',
+    location: `${packageData.location || 'Destination'} Hotel`,
+    includes: 'Breakfast',
+    roomType: 'Deluxe Room With Balcony',
+    rating: 5,
+    nights: packageData.nights || 3,
+    imageUrl: bannerImages[1] || bannerImages[0] || null,
+  },
+  transport: {
+    name: 'Private Transport',
+    description: `Comfortable private transport from airport to hotel in ${packageData.location || 'destination'}.`,
+    imageUrl: null,
+  },
+  flight:
+    i === 0
+      ? {
+          airline: 'IndiGo',
+          flightNo: '6E1465',
+          departTime: '02:00',
+          arriveTime: '02:00',
+          duration: '2h 15m - Direct',
+          from: 'DEL T3',
+          to: 'HYB T3',
+          cabin: '7kgs',
+          checkIn: '7kgs',
+        }
+      : null,
+});
+
 const usePackageDetail = (packageId) => {
   const [travellersCount, setTravellersCount] = useState(2);
 
-  // ── Fetch package ────────────────────────────────────────────
   const {
     data: packageData,
     isLoading,
@@ -31,14 +65,12 @@ const usePackageDetail = (packageId) => {
     staleTime: 5 * 60 * 1000,
   });
 
-  // ── Price calculation ────────────────────────────────────────
   const {
     mutate: recalculatePrice,
     data: priceData,
     isPending: isPriceLoading,
   } = useMutation({
-    mutationFn: (activityIds) =>
-      calculatePackagePrice(packageId, activityIds),
+    mutationFn: (activityIds) => calculatePackagePrice(packageId, activityIds),
   });
 
   const handleRecalculate = useCallback(
@@ -56,7 +88,6 @@ const usePackageDetail = (packageId) => {
     setTravellersCount((prev) => Math.max(prev - 1, 1));
   }, []);
 
-  // ── Initiate booking — called on "Book Now" ──────────────────
   const {
     mutate: initiateBooking,
     isPending: isBookingInitiating,
@@ -74,43 +105,26 @@ const usePackageDetail = (packageId) => {
     ? packageData.images.map(resolveImage).filter(Boolean)
     : [];
 
-  // ── Days ─────────────────────────────────────────────────────
+  // ── Days — real itinerary if present, fake fallback otherwise ─
+  const totalDays = packageData?.nights || 3;
+  const realItinerary = packageData?.itinerary;
+  const hasRealItinerary = Array.isArray(realItinerary) && realItinerary.length > 0;
+
   const days = packageData
-    ? Array.from({ length: packageData.nights || 3 }, (_, i) => ({
-        dayNumber: i + 1,
-        label: packageData.title || 'Package',
-        included: 'Flight, Hotel and Transport',
-        hotel: {
-          name: 'Sharanam Greens Resort',
-          location: `${packageData.location || 'Destination'} Hotel`,
-          includes: 'Breakfast',
-          roomType: 'Deluxe Room With Balcony',
-          rating: 5,
-          nights: packageData.nights || 3,
-          imageUrl: bannerImages[1] || bannerImages[0] || null,
-        },
-        transport: {
-          name: 'Private Transport',
-          description: `Comfortable private transport from airport to hotel in ${
-            packageData.location || 'destination'
-          }.`,
-          imageUrl: null,
-        },
-        flight:
-          i === 0
-            ? {
-                airline: 'IndiGo',
-                flightNo: '6E1465',
-                departTime: '02:00',
-                arriveTime: '02:00',
-                duration: '2h 15m - Direct',
-                from: 'DEL T3',
-                to: 'HYB T3',
-                cabin: '7kgs',
-                checkIn: '7kgs',
-              }
-            : null,
-      }))
+    ? Array.from({ length: totalDays }, (_, i) => {
+        const realDay = hasRealItinerary
+          ? realItinerary.find((d) => d.dayNumber === i + 1)
+          : null;
+
+        const fakeDay = buildFakeDay(i, packageData, bannerImages);
+
+        return {
+          ...fakeDay,
+          // Override with real data where available
+          title: realDay?.title || fakeDay.title,
+          description: realDay?.description || null,
+        };
+      })
     : [];
 
   const displayPrice = priceData?.finalPrice ?? packageData?.price ?? 0;

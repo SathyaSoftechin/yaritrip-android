@@ -40,20 +40,35 @@ const FlightRow = ({ flight }) => {
   );
 };
 
-const DayCard = ({ day, onChangeHotel, onRemoveHotel, onChangeTransport, onRemoveTransport, onAddActivity }) => {
+const DayCard = ({
+  day,
+  onChangeHotel,
+  onRemoveHotel,
+  onChangeTransport,
+  onRemoveTransport,
+  onAddActivity,
+}) => {
   return (
     <View style={styles.daySection}>
+
       {/* Day header */}
       <View style={styles.dayHeader}>
         <View style={styles.dayBadge}>
           <Text style={styles.dayBadgeText}>Day {day.dayNumber}</Text>
         </View>
-        <Text style={styles.dayTitle}>{day.label}</Text>
+        <Text style={styles.dayTitle}>{day.title}</Text>
         <Text style={styles.dayIncluded}>
           {'  '}INCLUDED:{' '}
           <Text style={styles.dayIncludedValue}>{day.included}</Text>
         </Text>
       </View>
+
+      {/* ── Itinerary description (real data only) ── */}
+      {!!day.description && (
+        <View style={styles.descriptionBlock}>
+          <Text style={styles.descriptionText}>{day.description}</Text>
+        </View>
+      )}
 
       {/* Flight */}
       <FlightRow flight={day.flight} />
@@ -61,21 +76,31 @@ const DayCard = ({ day, onChangeHotel, onRemoveHotel, onChangeTransport, onRemov
       {/* Transport */}
       <View style={styles.sectionBlock}>
         <Text style={styles.sectionLabel}>
-          Transport {'  '}
+          Transport{'  '}
           <Text style={styles.sectionSub}>• Airport to hotel in Maldives</Text>
         </Text>
         <View style={styles.actionRow}>
-          <TouchableOpacity style={styles.outlineBtn} onPress={() => onChangeTransport(day.dayNumber)}>
+          <TouchableOpacity
+            style={styles.outlineBtn}
+            onPress={() => onChangeTransport && onChangeTransport(day.dayNumber)}
+          >
             <Text style={styles.outlineBtnText}>Change</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.outlineBtn} onPress={() => onRemoveTransport(day.dayNumber)}>
+          <TouchableOpacity
+            style={styles.outlineBtn}
+            onPress={() => onRemoveTransport && onRemoveTransport(day.dayNumber)}
+          >
             <Text style={styles.outlineBtnText}>Remove</Text>
           </TouchableOpacity>
         </View>
         {day.transport && (
           <View style={styles.transportCard}>
             <Image
-              source={day.transport.imageUrl ? { uri: day.transport.imageUrl } : require('../assets/car_placeholder.png')}
+              source={
+                day.transport.imageUrl
+                  ? { uri: day.transport.imageUrl }
+                  : require('../assets/car_placeholder.png')
+              }
               style={styles.transportImage}
               defaultSource={require('../assets/car_placeholder.png')}
             />
@@ -90,21 +115,33 @@ const DayCard = ({ day, onChangeHotel, onRemoveHotel, onChangeTransport, onRemov
       {/* Hotel */}
       <View style={styles.sectionBlock}>
         <Text style={styles.sectionLabel}>
-          Hotel {'  '}
-          <Text style={styles.sectionSub}>• {day.hotel?.nights}Nights In Abu Dhabi</Text>
+          Hotel{'  '}
+          <Text style={styles.sectionSub}>
+            • {day.hotel?.nights}Nights In {day.hotel?.location}
+          </Text>
         </Text>
         <View style={styles.actionRow}>
-          <TouchableOpacity style={styles.outlineBtn} onPress={() => onChangeHotel(day.dayNumber)}>
+          <TouchableOpacity
+            style={styles.outlineBtn}
+            onPress={() => onChangeHotel && onChangeHotel(day.dayNumber)}
+          >
             <Text style={styles.outlineBtnText}>Change</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.outlineBtn} onPress={() => onRemoveHotel(day.dayNumber)}>
+          <TouchableOpacity
+            style={styles.outlineBtn}
+            onPress={() => onRemoveHotel && onRemoveHotel(day.dayNumber)}
+          >
             <Text style={styles.outlineBtnText}>Remove</Text>
           </TouchableOpacity>
         </View>
         {day.hotel && (
           <View style={styles.hotelCard}>
             <Image
-              source={day.hotel.imageUrl ? { uri: day.hotel.imageUrl } : require('../assets/hotel_placeholder.png')}
+              source={
+                day.hotel.imageUrl
+                  ? { uri: day.hotel.imageUrl }
+                  : require('../assets/hotel_placeholder.png')
+              }
               style={styles.hotelImage}
               defaultSource={require('../assets/hotel_placeholder.png')}
             />
@@ -126,7 +163,10 @@ const DayCard = ({ day, onChangeHotel, onRemoveHotel, onChangeTransport, onRemov
       </View>
 
       {/* Add Activities CTA */}
-      <TouchableOpacity style={styles.addActivityCard} onPress={() => onAddActivity(day.dayNumber)}>
+      <TouchableOpacity
+        style={styles.addActivityCard}
+        onPress={() => onAddActivity && onAddActivity(day.dayNumber)}
+      >
         <View style={styles.addActivityLeft}>
           <Text style={styles.addActivityIcon}>💡</Text>
           <View>
@@ -179,6 +219,23 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
     fontWeight: '400',
   },
+
+  // ── Itinerary description ──
+  descriptionBlock: {
+    marginHorizontal: 16,
+    marginBottom: 10,
+    padding: 12,
+    backgroundColor: '#F0F7FF',
+    borderRadius: 10,
+    borderLeftWidth: 3,
+    borderLeftColor: colors.primary,
+  },
+  descriptionText: {
+    fontSize: 13,
+    color: colors.textPrimary,
+    lineHeight: 20,
+  },
+
   flightCard: {
     flexDirection: 'row',
     alignItems: 'center',

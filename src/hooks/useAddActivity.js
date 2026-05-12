@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { fetchActivitiesByDay, FAKE_ACTIVITIES } from '../services/packageService';
 
 const useAddActivity = (packageId, day) => {
-  const [activeTab, setActiveTab] = useState('Activity'); // 'Activity' | 'Transport'
+  const [activeTab, setActiveTab] = useState('Activity');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedActivityId, setSelectedActivityId] = useState(null);
 

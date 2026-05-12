@@ -16,8 +16,6 @@ export const useHome = () => {
     toDestination: '',
     toCityId: null,
     toCode: '',
-    when: '',
-    members: '',
   });
 
   // ─── Fetch cities ─────────────────────────────────────────
@@ -40,12 +38,10 @@ export const useHome = () => {
     enabled: !!activeCity,
   });
 
-
   const attractions = rawAttractions.map((item, index) => ({
     ...item,
     id: item?.id ?? `fallback-${index}`,
   }));
-
 
   const handleSearchFormChange = (field, value) => {
     if (field === '_swap') {
